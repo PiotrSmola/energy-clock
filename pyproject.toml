@@ -11,7 +11,7 @@ strict = true
 plugins = ["mypy_django_plugin.main"]
 
 [[tool.mypy.overrides]]
-module = ["celery.*", "django_celery_beat.*", "tqdm.*"]
+module = ["celery.*", "django_celery_beat.*", "django_celery_results.*", "tqdm.*"]
 ignore_missing_imports = true
 
 [tool.django-stubs]

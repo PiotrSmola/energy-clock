@@ -1,7 +1,7 @@
 __pycache__/
 *.py[cod]
 .env
-data/
+data/*
 !data/MANIFEST.md
 .pytest_cache/
 .mypy_cache/
