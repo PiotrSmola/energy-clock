@@ -1,0 +1,1159 @@
+{
+ "business_date": "2026-09-04",
+ "prices": [
+  {
+   "dtime_utc": "2026-09-03 22:15:00",
+   "price_pln_mwh": "717.86"
+  },
+  {
+   "dtime_utc": "2026-09-03 22:30:00",
+   "price_pln_mwh": "647.43"
+  },
+  {
+   "dtime_utc": "2026-09-03 22:45:00",
+   "price_pln_mwh": "605.00"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:00:00",
+   "price_pln_mwh": "581.19"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:15:00",
+   "price_pln_mwh": "591.65"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:30:00",
+   "price_pln_mwh": "553.58"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:45:00",
+   "price_pln_mwh": "543.59"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:00:00",
+   "price_pln_mwh": "527.56"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:15:00",
+   "price_pln_mwh": "531.32"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:30:00",
+   "price_pln_mwh": "517.62"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:45:00",
+   "price_pln_mwh": "525.58"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:00:00",
+   "price_pln_mwh": "520.04"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:15:00",
+   "price_pln_mwh": "531.41"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:30:00",
+   "price_pln_mwh": "529.59"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:45:00",
+   "price_pln_mwh": "521.60"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:00:00",
+   "price_pln_mwh": "529.59"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:15:00",
+   "price_pln_mwh": "532.79"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:30:00",
+   "price_pln_mwh": "536.72"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:45:00",
+   "price_pln_mwh": "551.76"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:00:00",
+   "price_pln_mwh": "557.12"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:15:00",
+   "price_pln_mwh": "579.55"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:30:00",
+   "price_pln_mwh": "565.16"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:45:00",
+   "price_pln_mwh": "588.45"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:00:00",
+   "price_pln_mwh": "643.54"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:15:00",
+   "price_pln_mwh": "708.40"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:30:00",
+   "price_pln_mwh": "782.68"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:45:00",
+   "price_pln_mwh": "792.36"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:00:00",
+   "price_pln_mwh": "782.81"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:15:00",
+   "price_pln_mwh": "917.84"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:30:00",
+   "price_pln_mwh": "1022.55"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:45:00",
+   "price_pln_mwh": "919.18"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:00:00",
+   "price_pln_mwh": "800.74"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:15:00",
+   "price_pln_mwh": "869.23"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:30:00",
+   "price_pln_mwh": "734.03"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:45:00",
+   "price_pln_mwh": "679.58"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:00:00",
+   "price_pln_mwh": "635.20"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:15:00",
+   "price_pln_mwh": "727.85"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:30:00",
+   "price_pln_mwh": "631.18"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:45:00",
+   "price_pln_mwh": "538.24"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:00:00",
+   "price_pln_mwh": "455.70"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:15:00",
+   "price_pln_mwh": "510.45"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:30:00",
+   "price_pln_mwh": "462.27"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:45:00",
+   "price_pln_mwh": "459.68"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:00:00",
+   "price_pln_mwh": "467.54"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:15:00",
+   "price_pln_mwh": "459.68"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:30:00",
+   "price_pln_mwh": "459.68"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:45:00",
+   "price_pln_mwh": "479.64"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:00:00",
+   "price_pln_mwh": "481.67"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:15:00",
+   "price_pln_mwh": "481.67"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:30:00",
+   "price_pln_mwh": "495.63"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:45:00",
+   "price_pln_mwh": "481.67"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:00:00",
+   "price_pln_mwh": "479.69"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:15:00",
+   "price_pln_mwh": "481.63"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:30:00",
+   "price_pln_mwh": "474.41"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:45:00",
+   "price_pln_mwh": "481.67"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:00:00",
+   "price_pln_mwh": "581.66"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:15:00",
+   "price_pln_mwh": "552.45"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:30:00",
+   "price_pln_mwh": "481.67"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:45:00",
+   "price_pln_mwh": "481.67"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:00:00",
+   "price_pln_mwh": "481.02"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:15:00",
+   "price_pln_mwh": "459.68"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:30:00",
+   "price_pln_mwh": "459.68"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:45:00",
+   "price_pln_mwh": "455.70"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:00:00",
+   "price_pln_mwh": "455.70"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:15:00",
+   "price_pln_mwh": "453.67"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:30:00",
+   "price_pln_mwh": "455.70"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:45:00",
+   "price_pln_mwh": "479.64"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:00:00",
+   "price_pln_mwh": "630.88"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:15:00",
+   "price_pln_mwh": "479.69"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:30:00",
+   "price_pln_mwh": "514.51"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:45:00",
+   "price_pln_mwh": "566.11"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:00:00",
+   "price_pln_mwh": "689.82"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:15:00",
+   "price_pln_mwh": "547.92"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:30:00",
+   "price_pln_mwh": "659.75"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:45:00",
+   "price_pln_mwh": "707.84"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:00:00",
+   "price_pln_mwh": "762.50"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:15:00",
+   "price_pln_mwh": "694.49"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:30:00",
+   "price_pln_mwh": "718.73"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:45:00",
+   "price_pln_mwh": "725.04"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:00:00",
+   "price_pln_mwh": "749.24"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:15:00",
+   "price_pln_mwh": "746.82"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:30:00",
+   "price_pln_mwh": "735.88"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:45:00",
+   "price_pln_mwh": "732.99"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:00:00",
+   "price_pln_mwh": "708.14"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:15:00",
+   "price_pln_mwh": "721.36"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:30:00",
+   "price_pln_mwh": "658.97"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:45:00",
+   "price_pln_mwh": "565.16"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:00:00",
+   "price_pln_mwh": "509.07"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:15:00",
+   "price_pln_mwh": "615.15"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:30:00",
+   "price_pln_mwh": "604.26"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:45:00",
+   "price_pln_mwh": "609.53"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:00:00",
+   "price_pln_mwh": "569.56"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:15:00",
+   "price_pln_mwh": "581.53"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:30:00",
+   "price_pln_mwh": "543.55"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:45:00",
+   "price_pln_mwh": "533.57"
+  },
+  {
+   "dtime_utc": "2026-09-04 22:00:00",
+   "price_pln_mwh": "475.84"
+  }
+ ],
+ "generation": [
+  {
+   "dtime_utc": "2026-09-03 22:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5474.000",
+   "conventional_mw": "9749.000",
+   "demand_mw": "15650.000",
+   "carbon_g_kwh": "480.3"
+  },
+  {
+   "dtime_utc": "2026-09-03 22:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5477.000",
+   "conventional_mw": "9680.000",
+   "demand_mw": "15400.000",
+   "carbon_g_kwh": "479.0"
+  },
+  {
+   "dtime_utc": "2026-09-03 22:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5520.000",
+   "conventional_mw": "9468.000",
+   "demand_mw": "15200.000",
+   "carbon_g_kwh": "473.8"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5632.000",
+   "conventional_mw": "9187.000",
+   "demand_mw": "15050.000",
+   "carbon_g_kwh": "465.0"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5687.000",
+   "conventional_mw": "8808.000",
+   "demand_mw": "14850.000",
+   "carbon_g_kwh": "455.7"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5591.000",
+   "conventional_mw": "9137.000",
+   "demand_mw": "15100.000",
+   "carbon_g_kwh": "465.3"
+  },
+  {
+   "dtime_utc": "2026-09-03 23:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5613.000",
+   "conventional_mw": "8937.000",
+   "demand_mw": "15000.000",
+   "carbon_g_kwh": "460.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5635.000",
+   "conventional_mw": "8436.000",
+   "demand_mw": "14650.000",
+   "carbon_g_kwh": "449.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5394.000",
+   "conventional_mw": "8487.000",
+   "demand_mw": "14550.000",
+   "carbon_g_kwh": "458.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5370.000",
+   "conventional_mw": "8471.000",
+   "demand_mw": "14500.000",
+   "carbon_g_kwh": "459.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 00:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5399.000",
+   "conventional_mw": "8402.000",
+   "demand_mw": "14500.000",
+   "carbon_g_kwh": "456.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5348.000",
+   "conventional_mw": "8423.000",
+   "demand_mw": "14500.000",
+   "carbon_g_kwh": "458.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5350.000",
+   "conventional_mw": "8467.000",
+   "demand_mw": "14500.000",
+   "carbon_g_kwh": "459.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5317.000",
+   "conventional_mw": "8417.000",
+   "demand_mw": "14500.000",
+   "carbon_g_kwh": "459.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 01:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5430.000",
+   "conventional_mw": "8328.000",
+   "demand_mw": "14550.000",
+   "carbon_g_kwh": "454.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5449.000",
+   "conventional_mw": "8390.000",
+   "demand_mw": "14600.000",
+   "carbon_g_kwh": "454.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5499.000",
+   "conventional_mw": "8216.000",
+   "demand_mw": "14500.000",
+   "carbon_g_kwh": "449.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5196.000",
+   "conventional_mw": "8728.000",
+   "demand_mw": "14850.000",
+   "carbon_g_kwh": "470.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 02:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5156.000",
+   "conventional_mw": "9042.000",
+   "demand_mw": "15150.000",
+   "carbon_g_kwh": "477.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5147.000",
+   "conventional_mw": "9494.000",
+   "demand_mw": "15600.000",
+   "carbon_g_kwh": "486.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5185.000",
+   "conventional_mw": "9640.000",
+   "demand_mw": "15850.000",
+   "carbon_g_kwh": "487.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5157.000",
+   "conventional_mw": "9894.000",
+   "demand_mw": "16200.000",
+   "carbon_g_kwh": "493.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 03:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "5126.000",
+   "conventional_mw": "9615.000",
+   "demand_mw": "16000.000",
+   "carbon_g_kwh": "489.2"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:00:00",
+   "pv_mw": "3.000",
+   "wind_mw": "5070.000",
+   "conventional_mw": "9934.000",
+   "demand_mw": "16450.000",
+   "carbon_g_kwh": "496.5"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:15:00",
+   "pv_mw": "20.000",
+   "wind_mw": "5035.000",
+   "conventional_mw": "10582.000",
+   "demand_mw": "17600.000",
+   "carbon_g_kwh": "507.5"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:30:00",
+   "pv_mw": "106.000",
+   "wind_mw": "5027.000",
+   "conventional_mw": "10478.000",
+   "demand_mw": "18100.000",
+   "carbon_g_kwh": "503.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 04:45:00",
+   "pv_mw": "216.000",
+   "wind_mw": "4917.000",
+   "conventional_mw": "10639.000",
+   "demand_mw": "18600.000",
+   "carbon_g_kwh": "505.9"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:00:00",
+   "pv_mw": "366.000",
+   "wind_mw": "4878.000",
+   "conventional_mw": "10473.000",
+   "demand_mw": "18950.000",
+   "carbon_g_kwh": "499.8"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:15:00",
+   "pv_mw": "553.000",
+   "wind_mw": "4850.000",
+   "conventional_mw": "10196.000",
+   "demand_mw": "19200.000",
+   "carbon_g_kwh": "490.2"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:30:00",
+   "pv_mw": "812.000",
+   "wind_mw": "4804.000",
+   "conventional_mw": "10064.000",
+   "demand_mw": "19400.000",
+   "carbon_g_kwh": "481.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 05:45:00",
+   "pv_mw": "1339.000",
+   "wind_mw": "4732.000",
+   "conventional_mw": "9766.000",
+   "demand_mw": "19650.000",
+   "carbon_g_kwh": "462.5"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:00:00",
+   "pv_mw": "1608.000",
+   "wind_mw": "4710.000",
+   "conventional_mw": "9599.000",
+   "demand_mw": "19600.000",
+   "carbon_g_kwh": "452.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:15:00",
+   "pv_mw": "2068.000",
+   "wind_mw": "4561.000",
+   "conventional_mw": "9345.000",
+   "demand_mw": "19600.000",
+   "carbon_g_kwh": "438.8"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:30:00",
+   "pv_mw": "2403.000",
+   "wind_mw": "4530.000",
+   "conventional_mw": "9078.000",
+   "demand_mw": "19600.000",
+   "carbon_g_kwh": "425.2"
+  },
+  {
+   "dtime_utc": "2026-09-04 06:45:00",
+   "pv_mw": "3008.000",
+   "wind_mw": "4456.000",
+   "conventional_mw": "8587.000",
+   "demand_mw": "19800.000",
+   "carbon_g_kwh": "401.2"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:00:00",
+   "pv_mw": "3411.000",
+   "wind_mw": "4279.000",
+   "conventional_mw": "8170.000",
+   "demand_mw": "19800.000",
+   "carbon_g_kwh": "386.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:15:00",
+   "pv_mw": "3925.000",
+   "wind_mw": "4288.000",
+   "conventional_mw": "7915.000",
+   "demand_mw": "19800.000",
+   "carbon_g_kwh": "368.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:30:00",
+   "pv_mw": "4403.000",
+   "wind_mw": "4355.000",
+   "conventional_mw": "7380.000",
+   "demand_mw": "19050.000",
+   "carbon_g_kwh": "343.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 07:45:00",
+   "pv_mw": "5345.000",
+   "wind_mw": "4330.000",
+   "conventional_mw": "7104.000",
+   "demand_mw": "19100.000",
+   "carbon_g_kwh": "317.5"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:00:00",
+   "pv_mw": "5714.000",
+   "wind_mw": "4315.000",
+   "conventional_mw": "6941.000",
+   "demand_mw": "19050.000",
+   "carbon_g_kwh": "306.8"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:15:00",
+   "pv_mw": "5605.000",
+   "wind_mw": "3722.000",
+   "conventional_mw": "6937.000",
+   "demand_mw": "18400.000",
+   "carbon_g_kwh": "319.9"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:30:00",
+   "pv_mw": "5690.000",
+   "wind_mw": "3538.000",
+   "conventional_mw": "7506.000",
+   "demand_mw": "19250.000",
+   "carbon_g_kwh": "336.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 08:45:00",
+   "pv_mw": "5954.000",
+   "wind_mw": "3618.000",
+   "conventional_mw": "7215.000",
+   "demand_mw": "19550.000",
+   "carbon_g_kwh": "322.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:00:00",
+   "pv_mw": "6008.000",
+   "wind_mw": "3853.000",
+   "conventional_mw": "7229.000",
+   "demand_mw": "19550.000",
+   "carbon_g_kwh": "317.2"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:15:00",
+   "pv_mw": "6398.000",
+   "wind_mw": "3851.000",
+   "conventional_mw": "7169.000",
+   "demand_mw": "19550.000",
+   "carbon_g_kwh": "308.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:30:00",
+   "pv_mw": "6673.000",
+   "wind_mw": "3889.000",
+   "conventional_mw": "7043.000",
+   "demand_mw": "19900.000",
+   "carbon_g_kwh": "300.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 09:45:00",
+   "pv_mw": "6805.000",
+   "wind_mw": "3926.000",
+   "conventional_mw": "7191.000",
+   "demand_mw": "19950.000",
+   "carbon_g_kwh": "300.9"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:00:00",
+   "pv_mw": "6918.000",
+   "wind_mw": "3944.000",
+   "conventional_mw": "7829.000",
+   "demand_mw": "20200.000",
+   "carbon_g_kwh": "314.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:15:00",
+   "pv_mw": "7098.000",
+   "wind_mw": "4407.000",
+   "conventional_mw": "7673.000",
+   "demand_mw": "20400.000",
+   "carbon_g_kwh": "300.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:30:00",
+   "pv_mw": "7202.000",
+   "wind_mw": "4438.000",
+   "conventional_mw": "7557.000",
+   "demand_mw": "20400.000",
+   "carbon_g_kwh": "295.2"
+  },
+  {
+   "dtime_utc": "2026-09-04 10:45:00",
+   "pv_mw": "7289.000",
+   "wind_mw": "4454.000",
+   "conventional_mw": "7834.000",
+   "demand_mw": "20850.000",
+   "carbon_g_kwh": "300.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:00:00",
+   "pv_mw": "7342.000",
+   "wind_mw": "4479.000",
+   "conventional_mw": "8177.000",
+   "demand_mw": "21200.000",
+   "carbon_g_kwh": "306.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:15:00",
+   "pv_mw": "7423.000",
+   "wind_mw": "4773.000",
+   "conventional_mw": "7429.000",
+   "demand_mw": "20700.000",
+   "carbon_g_kwh": "283.9"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:30:00",
+   "pv_mw": "7384.000",
+   "wind_mw": "4845.000",
+   "conventional_mw": "7093.000",
+   "demand_mw": "20400.000",
+   "carbon_g_kwh": "275.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 11:45:00",
+   "pv_mw": "7275.000",
+   "wind_mw": "4857.000",
+   "conventional_mw": "6947.000",
+   "demand_mw": "20000.000",
+   "carbon_g_kwh": "273.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:00:00",
+   "pv_mw": "7161.000",
+   "wind_mw": "4932.000",
+   "conventional_mw": "6967.000",
+   "demand_mw": "19650.000",
+   "carbon_g_kwh": "274.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:15:00",
+   "pv_mw": "6929.000",
+   "wind_mw": "5246.000",
+   "conventional_mw": "6909.000",
+   "demand_mw": "19850.000",
+   "carbon_g_kwh": "271.5"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:30:00",
+   "pv_mw": "6753.000",
+   "wind_mw": "5283.000",
+   "conventional_mw": "6904.000",
+   "demand_mw": "20000.000",
+   "carbon_g_kwh": "273.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 12:45:00",
+   "pv_mw": "6553.000",
+   "wind_mw": "5326.000",
+   "conventional_mw": "7267.000",
+   "demand_mw": "20200.000",
+   "carbon_g_kwh": "284.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:00:00",
+   "pv_mw": "6347.000",
+   "wind_mw": "5381.000",
+   "conventional_mw": "8261.000",
+   "demand_mw": "21000.000",
+   "carbon_g_kwh": "310.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:15:00",
+   "pv_mw": "5824.000",
+   "wind_mw": "5429.000",
+   "conventional_mw": "8298.000",
+   "demand_mw": "21000.000",
+   "carbon_g_kwh": "318.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:30:00",
+   "pv_mw": "5650.000",
+   "wind_mw": "5513.000",
+   "conventional_mw": "7372.000",
+   "demand_mw": "20500.000",
+   "carbon_g_kwh": "298.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 13:45:00",
+   "pv_mw": "5465.000",
+   "wind_mw": "5626.000",
+   "conventional_mw": "7546.000",
+   "demand_mw": "20800.000",
+   "carbon_g_kwh": "303.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:00:00",
+   "pv_mw": "5241.000",
+   "wind_mw": "5725.000",
+   "conventional_mw": "7680.000",
+   "demand_mw": "21200.000",
+   "carbon_g_kwh": "308.9"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:15:00",
+   "pv_mw": "4854.000",
+   "wind_mw": "5847.000",
+   "conventional_mw": "7571.000",
+   "demand_mw": "21450.000",
+   "carbon_g_kwh": "310.8"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:30:00",
+   "pv_mw": "4498.000",
+   "wind_mw": "5941.000",
+   "conventional_mw": "8089.000",
+   "demand_mw": "21750.000",
+   "carbon_g_kwh": "327.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 14:45:00",
+   "pv_mw": "4095.000",
+   "wind_mw": "6052.000",
+   "conventional_mw": "8562.000",
+   "demand_mw": "21850.000",
+   "carbon_g_kwh": "343.2"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:00:00",
+   "pv_mw": "3680.000",
+   "wind_mw": "6185.000",
+   "conventional_mw": "8696.000",
+   "demand_mw": "21900.000",
+   "carbon_g_kwh": "351.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:15:00",
+   "pv_mw": "2982.000",
+   "wind_mw": "5952.000",
+   "conventional_mw": "9068.000",
+   "demand_mw": "21800.000",
+   "carbon_g_kwh": "377.8"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:30:00",
+   "pv_mw": "2603.000",
+   "wind_mw": "6176.000",
+   "conventional_mw": "8794.000",
+   "demand_mw": "21300.000",
+   "carbon_g_kwh": "375.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 15:45:00",
+   "pv_mw": "2217.000",
+   "wind_mw": "6432.000",
+   "conventional_mw": "8604.000",
+   "demand_mw": "20900.000",
+   "carbon_g_kwh": "374.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:00:00",
+   "pv_mw": "1839.000",
+   "wind_mw": "6675.000",
+   "conventional_mw": "8905.000",
+   "demand_mw": "20900.000",
+   "carbon_g_kwh": "383.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:15:00",
+   "pv_mw": "1578.000",
+   "wind_mw": "6847.000",
+   "conventional_mw": "9539.000",
+   "demand_mw": "21300.000",
+   "carbon_g_kwh": "398.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:30:00",
+   "pv_mw": "1185.000",
+   "wind_mw": "6765.000",
+   "conventional_mw": "9812.000",
+   "demand_mw": "20900.000",
+   "carbon_g_kwh": "414.3"
+  },
+  {
+   "dtime_utc": "2026-09-04 16:45:00",
+   "pv_mw": "799.000",
+   "wind_mw": "6932.000",
+   "conventional_mw": "9715.000",
+   "demand_mw": "20600.000",
+   "carbon_g_kwh": "417.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:00:00",
+   "pv_mw": "503.000",
+   "wind_mw": "7155.000",
+   "conventional_mw": "9910.000",
+   "demand_mw": "20600.000",
+   "carbon_g_kwh": "423.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:15:00",
+   "pv_mw": "287.000",
+   "wind_mw": "7373.000",
+   "conventional_mw": "9826.000",
+   "demand_mw": "20450.000",
+   "carbon_g_kwh": "421.5"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:30:00",
+   "pv_mw": "144.000",
+   "wind_mw": "7422.000",
+   "conventional_mw": "10010.000",
+   "demand_mw": "20600.000",
+   "carbon_g_kwh": "427.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 17:45:00",
+   "pv_mw": "110.000",
+   "wind_mw": "7438.000",
+   "conventional_mw": "9963.000",
+   "demand_mw": "20600.000",
+   "carbon_g_kwh": "426.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:00:00",
+   "pv_mw": "19.000",
+   "wind_mw": "7488.000",
+   "conventional_mw": "10357.000",
+   "demand_mw": "20950.000",
+   "carbon_g_kwh": "434.8"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "7490.000",
+   "conventional_mw": "10630.000",
+   "demand_mw": "21200.000",
+   "carbon_g_kwh": "440.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "7837.000",
+   "conventional_mw": "9872.000",
+   "demand_mw": "20700.000",
+   "carbon_g_kwh": "418.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 18:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "7872.000",
+   "conventional_mw": "9576.000",
+   "demand_mw": "20400.000",
+   "carbon_g_kwh": "411.6"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "7890.000",
+   "conventional_mw": "9537.000",
+   "demand_mw": "20050.000",
+   "carbon_g_kwh": "410.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "7884.000",
+   "conventional_mw": "9772.000",
+   "demand_mw": "19650.000",
+   "carbon_g_kwh": "415.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "7964.000",
+   "conventional_mw": "9367.000",
+   "demand_mw": "19150.000",
+   "carbon_g_kwh": "405.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 19:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8016.000",
+   "conventional_mw": "9404.000",
+   "demand_mw": "19150.000",
+   "carbon_g_kwh": "404.9"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8013.000",
+   "conventional_mw": "9181.000",
+   "demand_mw": "18650.000",
+   "carbon_g_kwh": "400.5"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8042.000",
+   "conventional_mw": "9340.000",
+   "demand_mw": "18450.000",
+   "carbon_g_kwh": "403.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8080.000",
+   "conventional_mw": "9241.000",
+   "demand_mw": "18150.000",
+   "carbon_g_kwh": "400.1"
+  },
+  {
+   "dtime_utc": "2026-09-04 20:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "7988.000",
+   "conventional_mw": "9123.000",
+   "demand_mw": "17600.000",
+   "carbon_g_kwh": "399.9"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8054.000",
+   "conventional_mw": "8603.000",
+   "demand_mw": "17250.000",
+   "carbon_g_kwh": "387.4"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:15:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8051.000",
+   "conventional_mw": "8080.000",
+   "demand_mw": "16750.000",
+   "carbon_g_kwh": "375.7"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:30:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8098.000",
+   "conventional_mw": "7970.000",
+   "demand_mw": "16450.000",
+   "carbon_g_kwh": "372.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 21:45:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8141.000",
+   "conventional_mw": "7718.000",
+   "demand_mw": "16150.000",
+   "carbon_g_kwh": "365.0"
+  },
+  {
+   "dtime_utc": "2026-09-04 22:00:00",
+   "pv_mw": "0.000",
+   "wind_mw": "8148.000",
+   "conventional_mw": "6920.000",
+   "demand_mw": "15800.000",
+   "carbon_g_kwh": "344.4"
+  }
+ ]
+}
