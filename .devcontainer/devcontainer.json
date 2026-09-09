@@ -1,0 +1,20 @@
+{
+  "name": "Energy Clock",
+  "dockerComposeFile": "../compose.yml",
+  "service": "web",
+  "workspaceFolder": "/app",
+  "shutdownAction": "stopCompose",
+  "overrideCommand": true,
+  "forwardPorts": [8000, 8025],
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "charliermarsh.ruff",
+        "batisteo.vscode-django",
+        "ms-azuretools.vscode-docker"
+      ]
+    }
+  }
+}

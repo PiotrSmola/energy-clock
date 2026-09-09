@@ -1,0 +1,71 @@
+name: energy-clock
+
+services:
+  redis:
+    image: redis:8.8.2-alpine3.23
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:6381:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  mailpit:
+    image: axllent/mailpit:v1.31.1
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8025:8025"
+
+  web:
+    build:
+      context: .
+      target: dev
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      DJANGO_DEBUG: "1"
+      REDIS_URL: redis://redis:6379/0
+      EMAIL_HOST: mailpit
+      EMAIL_PORT: "1025"
+      TZ: Europe/Warsaw
+    ports:
+      - "127.0.0.1:8000:8000"
+    volumes:
+      - .:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  worker:
+    build:
+      context: .
+      target: dev
+    command: celery -A config worker -l info
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      REDIS_URL: redis://redis:6379/0
+      TZ: Europe/Warsaw
+    volumes:
+      - .:/app
+    depends_on:
+      redis:
+        condition: service_healthy
+
+  beat:
+    build:
+      context: .
+      target: dev
+    command: celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
+      REDIS_URL: redis://redis:6379/0
+      TZ: Europe/Warsaw
+    volumes:
+      - .:/app
+    depends_on:
+      redis:
+        condition: service_healthy
