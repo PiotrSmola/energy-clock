@@ -17,6 +17,10 @@ plugins = ["mypy_django_plugin.main"]
 module = ["celery.*", "django_celery_beat.*", "django_celery_results.*", "tqdm.*"]
 ignore_missing_imports = true
 
+[[tool.mypy.overrides]]
+module = ["apps.*.tasks"]
+disallow_untyped_decorators = false
+
 [tool.django-stubs]
 django_settings_module = "config.settings"
 

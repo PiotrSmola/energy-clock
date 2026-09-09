@@ -1,7 +1,11 @@
 import os
 from pathlib import Path
 
+import django_stubs_ext
+from celery.schedules import crontab
 from dotenv import load_dotenv
+
+django_stubs_ext.monkeypatch()
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -124,6 +128,22 @@ CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 15 * 60
 
 CELERY_TASK_ALWAYS_EAGER = os.environ.get("CELERY_TASK_ALWAYS_EAGER", "0") == "1"
+
+CELERY_BEAT_SCHEDULE = {
+    "fetch-tomorrow-prices": {
+        "task": "apps.market.tasks.fetch_tomorrow_prices",
+        "schedule": crontab(hour="14,15,16", minute=15),
+    },
+    "fetch-today-generation": {
+        "task": "apps.market.tasks.fetch_today_generation",
+        "schedule": crontab(minute=5),
+    },
+    "fill-gaps": {
+        "task": "apps.market.tasks.fill_gaps",
+        "schedule": crontab(hour=3, minute=30),
+        "kwargs": {"days": 7},
+    },
+}
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
