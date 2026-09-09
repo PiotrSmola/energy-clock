@@ -1,0 +1,50 @@
+{% load i18n energy %}
+<div class="panel-progress" aria-hidden="true"></div>
+{% if not submitted %}
+  <div class="result result--idle">
+    <p class="muted">{% translate "The result appears here: the cheapest start time, the cost, and how much you save compared with starting right now." %}</p>
+  </div>
+{% elif not form.is_valid %}
+  <div class="result result--idle">
+    <p class="muted">{% translate "Check the highlighted fields." %}</p>
+  </div>
+{% elif not plan.has_data %}
+  <div class="result result--empty">
+    <p class="empty-title">{% translate "No price data available for the coming hours." %}</p>
+    {% include "web/partials/freshness.html" with freshness=freshness published_at=None %}
+  </div>
+{% elif plan.cheapest %}
+  <article class="result">
+    <p class="result-kicker">{{ plan.request.label }} · {{ plan.request.duration_minutes|duration }} · <span class="num">{{ plan.request.power_kw }} kW</span> · <span class="num">{{ plan.energy_kwh }} kWh</span></p>
+    <p class="result-main">
+      <span class="result-label">{% translate "Start at" %}</span>
+      <span class="value num">{{ plan.cheapest.start_utc|local_hm }}</span>
+      <span class="result-when">{{ plan.cheapest.start_utc|relative_day:now }}, {% translate "done by" %} <span class="num">{{ plan.cheapest.end_utc|local_hm }}</span></span>
+    </p>
+    <dl class="result-grid">
+      <div><dt>{% translate "Cost in this window" %}</dt><dd class="num">{{ plan.cheapest.cost_pln|money }} <small>PLN</small></dd></div>
+      <div><dt>{% translate "Cost if started now" %}</dt><dd class="num">{% if plan.start_now %}{{ plan.start_now.cost_pln|money }} <small>PLN</small>{% else %}–{% endif %}</dd></div>
+      {% if plan.savings_pln is not None and plan.savings_pln < 0 %}
+      <div class="result-extra"><dt>{% translate "More than starting now" %}</dt><dd class="num">{{ plan.extra_cost_pln|money }} <small>PLN</small></dd><dd class="muted">{% translate "starting right now would be cheaper, but it falls outside your constraints" %}</dd></div>
+      {% else %}
+      <div class="result-save"><dt>{% translate "You save" %}</dt><dd class="num">{% if plan.savings_pln is not None %}{{ plan.savings_pln|money }} <small>PLN{% if plan.savings_percent %} ({{ plan.savings_percent }} %){% endif %}</small>{% else %}–{% endif %}</dd></div>
+      {% endif %}
+      <div><dt>{% translate "Average price in window" %}</dt><dd class="num">{{ plan.cheapest.avg_price_pln_mwh|money }} <small>PLN/MWh</small></dd></div>
+      <div><dt>{% translate "Carbon footprint" %}</dt><dd class="num">{% if plan.cheapest.carbon_g is not None %}≈ {{ plan.cheapest.carbon_g|grams_to_kg }} <small>kg CO₂</small>{% else %}–{% endif %}</dd></div>
+      <div><dt>{% translate "Most expensive option" %}</dt><dd class="num">{% if plan.most_expensive %}{{ plan.most_expensive.cost_pln|money }} <small>PLN, {{ plan.most_expensive.start_utc|local_hm }}</small>{% else %}–{% endif %}</dd></div>
+    </dl>
+    {% if chart %}{% include "web/partials/chart.html" with chart=chart compact=True %}{% endif %}
+    {% if plan.request.not_before or plan.request.not_after %}
+      <p class="muted num">{% if plan.request.not_before %}{% translate "not before" %} {{ plan.request.not_before|local_hm }} ({{ plan.request.not_before|relative_day:now }}){% endif %}{% if plan.request.not_before and plan.request.not_after %} · {% endif %}{% if plan.request.not_after %}{% translate "finish by" %} {{ plan.request.not_after|local_hm }} ({{ plan.request.not_after|relative_day:now }}){% endif %}</p>
+    {% endif %}
+    <p class="disclaimer">{% translate "Estimate at wholesale day-ahead prices, assuming constant power draw for the whole cycle. Your bill adds supplier margin, distribution fees and taxes." %}</p>
+  </article>
+{% else %}
+  <div class="result result--empty">
+    <p class="empty-title">{% translate "No window fits these constraints in the available data." %}</p>
+    <p class="muted">
+      {% if plan.request.not_after %}{% translate "Try a later deadline or a shorter cycle." %}{% endif %}
+      {% if plan.horizon_end %}{% blocktranslate trimmed with at=plan.horizon_end|local_hm day=plan.horizon_end|relative_day:now %}Prices are known until {{ at }} {{ day }}; tomorrow's prices appear around 14:00.{% endblocktranslate %}{% endif %}
+    </p>
+  </div>
+{% endif %}

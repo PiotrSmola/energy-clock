@@ -1,0 +1,17 @@
+{% load i18n energy %}
+<p class="fresh{% if freshness.is_stale %} fresh--stale{% endif %}">
+  {% if freshness.last_success_at %}
+    {% blocktranslate trimmed with ago=freshness.last_success_at|timesince %}Last successful update {{ ago }} ago{% endblocktranslate %}
+  {% else %}
+    {% translate "No successful update yet" %}
+  {% endif %}
+  {% if published_at %}
+    · {% blocktranslate trimmed with at=published_at|local_dt %}published by PSE {{ at }}{% endblocktranslate %}
+  {% endif %}
+  {% if freshness.last_attempt_failed %}
+    · {% blocktranslate trimmed with at=freshness.last_attempt_at|local_dt %}last attempt failed {{ at }}, showing cached data{% endblocktranslate %}
+  {% endif %}
+</p>
+{% if freshness.is_stale %}
+<p class="banner banner--warn" role="status">{% translate "Data may be stale: the last successful update is more than a day old." %}</p>
+{% endif %}

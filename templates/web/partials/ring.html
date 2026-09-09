@@ -1,0 +1,11 @@
+<svg class="ring" viewBox="0 0 {{ ring.size }} {{ ring.size }}" width="{{ ring.size }}" height="{{ ring.size }}" focusable="false">
+  {% for segment in ring.segments %}<path class="ring-seg b{{ segment.bucket }}" d="{{ segment.path }}"><title>{{ segment.label }}</title></path>
+  {% endfor %}
+  {% if ring.hand_angle is not None %}
+  <g class="ring-hand" style="--angle:{{ ring.hand_angle|stringformat:'.1f' }}deg">
+    <line x1="60" y1="60" x2="60" y2="20"/>
+    <circle cx="60" cy="60" r="3"/>
+    <circle class="ring-tip" cx="60" cy="20" r="3.5"/>
+  </g>
+  {% endif %}
+</svg>

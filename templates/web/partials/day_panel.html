@@ -1,0 +1,73 @@
+{% load i18n energy %}
+<div class="panel-head">
+  <nav class="daytabs" aria-label="{% translate 'Day' %}">
+    <a href="{% url 'web:home' %}?day=today" hx-get="{% url 'web:home' %}?day=today" hx-target="#day-panel" hx-swap="innerHTML transition:true" hx-push-url="true"{% if panel.key == 'today' %} aria-current="page"{% endif %}>{% translate "Today" %}</a>
+    <a href="{% url 'web:home' %}?day=tomorrow" hx-get="{% url 'web:home' %}?day=tomorrow" hx-target="#day-panel" hx-swap="innerHTML transition:true" hx-push-url="true"{% if panel.key == 'tomorrow' %} aria-current="page"{% endif %}>{% translate "Tomorrow" %}</a>
+  </nav>
+  <h1 class="panel-title">{{ panel.day|date:"l, j E Y" }}</h1>
+  <div class="panel-progress" aria-hidden="true"></div>
+</div>
+
+{% if panel.available %}
+  {% include "web/partials/chart.html" with chart=panel.chart %}
+
+  <div class="legend" aria-label="{% translate 'Price scale' %}">
+    {% for entry in panel.legend %}
+      <span class="legend-item"><i class="swatch b{{ entry.bucket }}"></i><span class="num">{% if entry.lower is None %}&lt; {{ entry.upper|money:0 }}{% elif entry.upper is None %}≥ {{ entry.lower|money:0 }}{% else %}{{ entry.lower|money:0 }}–{{ entry.upper|money:0 }}{% endif %}</span></span>
+    {% endfor %}
+    <span class="legend-note">{% translate "PLN/MWh, scale from the last 30 days" %}</span>
+  </div>
+
+  <dl class="daystats">
+    <div><dt>{% translate "Lowest" %}</dt><dd class="num">{{ panel.summary.lowest.price_pln_mwh|money }} <small>{{ panel.summary.lowest.interval_start_utc|local_hm }}–{{ panel.summary.lowest.dtime_utc|local_hm }}</small></dd></div>
+    <div><dt>{% translate "Highest" %}</dt><dd class="num">{{ panel.summary.highest.price_pln_mwh|money }} <small>{{ panel.summary.highest.interval_start_utc|local_hm }}–{{ panel.summary.highest.dtime_utc|local_hm }}</small></dd></div>
+    <div><dt>{% translate "Average" %}</dt><dd class="num">{{ panel.summary.average|money }}</dd></div>
+    <div><dt>{% translate "Spread" %}</dt><dd class="num">{% if panel.summary.spread_ratio %}×{{ panel.summary.spread_ratio }}{% else %}–{% endif %}</dd></div>
+    <div><dt>{% translate "Cheapest 2 h" %}</dt><dd class="num">{% if panel.summary.cheapest %}{{ panel.summary.cheapest.start_utc|local_hm }}–{{ panel.summary.cheapest.end_utc|local_hm }}{% else %}–{% endif %}</dd></div>
+    <div><dt>{% translate "Most expensive 2 h" %}</dt><dd class="num">{% if panel.summary.most_expensive %}{{ panel.summary.most_expensive.start_utc|local_hm }}–{{ panel.summary.most_expensive.end_utc|local_hm }}{% else %}–{% endif %}</dd></div>
+  </dl>
+
+  <p class="disclaimer">{% blocktranslate trimmed %}
+    These are wholesale day-ahead market prices published by PSE, not what you pay on your bill: your supplier adds a margin, and distribution fees, excise duty and VAT come on top.
+    The clock shows relative differences within the day; they translate into savings only on a dynamic tariff.
+  {% endblocktranslate %}</p>
+
+  {% include "web/partials/freshness.html" with freshness=panel.freshness published_at=panel.summary.published_at %}
+
+  <details class="intervals">
+    <summary>{% translate "All intervals" %} <span class="num">({{ panel.rows|length }})</span></summary>
+    <div class="table-scroll">
+      <table class="num">
+        <thead><tr><th scope="col">{% translate "Interval" %}</th><th scope="col">{% translate "Price PLN/MWh" %}</th><th scope="col">{% translate "RES share" %}</th></tr></thead>
+        <tbody>
+          {% for row in panel.rows %}
+          <tr{% if row.is_now %} class="is-now" aria-current="time"{% elif row.in_window %} class="in-window"{% endif %}>
+            <td>{{ row.start_local|date:"H:i" }}–{{ row.end_local|date:"H:i" }}{% if row.is_now %} <span class="tag-now">{% translate "now" %}</span>{% endif %}</td>
+            <td><i class="swatch b{{ row.bucket }}" aria-hidden="true"></i>{{ row.price|money }}</td>
+            <td>{% if row.res_share is not None %}{{ row.res_share }} %{% else %}–{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+{% else %}
+  <div class="empty">
+    {% if panel.key == 'tomorrow' %}
+      <p class="empty-title">{% translate "Tomorrow's prices are not published yet." %}</p>
+      <p>
+        {% blocktranslate trimmed with at=panel.expected_publication|local_hm %}PSE usually publishes them around {{ at }}.{% endblocktranslate %}
+        {% if panel.next_attempt %}
+          {% blocktranslate trimmed with at=panel.next_attempt|local_hm %}The next automatic check runs at {{ at }}.{% endblocktranslate %}
+        {% else %}
+          {% translate "Automatic checks continue with retries." %}
+        {% endif %}
+      </p>
+      {% if panel.publication_late %}<p class="muted">{% translate "Publication is later than usual today." %}</p>{% endif %}
+    {% else %}
+      <p class="empty-title">{% translate "No price data for this day." %}</p>
+      <p>{% translate "The import has not run for this day yet, or the source was unavailable." %}</p>
+    {% endif %}
+    {% include "web/partials/freshness.html" with freshness=panel.freshness published_at=None %}
+  </div>
+{% endif %}

@@ -1,0 +1,52 @@
+{% load static i18n %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}Energy Clock{% endblock %}</title>
+<meta name="description" content="{% block description %}{% translate "When to switch on an appliance to pay less for electricity: Polish day-ahead prices in 15-minute intervals, with a cheapest-window planner." %}{% endblock %}">
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f4f4f1">
+<link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+<link rel="preload" href="{% static 'fonts/bricolage-grotesque-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+<script defer src="{% static 'js/htmx.min.js' %}"></script>
+<script defer src="{% static 'js/app.js' %}"></script>
+<script defer src="{% static 'js/alpine.min.js' %}"></script>
+</head>
+<body>
+<a class="skip" href="#main">{% translate "Skip to content" %}</a>
+<header class="top">
+  <div class="wrap top-row">
+    <a class="brand" href="{% url 'web:home' %}" aria-label="Energy Clock">
+      <svg class="brand-mark" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="1.6"/>
+        <path d="M12 6.5V12l3.6 2.4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="brand-name">Energy Clock</span>
+    </a>
+    <nav class="nav" aria-label="{% translate 'Main navigation' %}">
+      <a href="{% url 'web:home' %}"{% if nav == 'home' %} aria-current="page"{% endif %}>{% translate "Price clock" %}</a>
+      <a href="{% url 'web:planner' %}"{% if nav == 'planner' %} aria-current="page"{% endif %}>{% translate "Planner" %}</a>
+    </nav>
+    <form class="lang" action="{% url 'set_language' %}" method="post" aria-label="{% translate 'Language' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit" name="language" value="en" lang="en"{% if LANGUAGE_CODE == 'en' %} aria-current="true"{% endif %}>EN</button>
+      <button type="submit" name="language" value="pl" lang="pl"{% if LANGUAGE_CODE == 'pl' %} aria-current="true"{% endif %}>PL</button>
+    </form>
+  </div>
+</header>
+<main id="main" class="wrap main">
+{% block content %}{% endblock %}
+</main>
+<footer class="foot">
+  <div class="wrap">
+    <p>{% blocktranslate trimmed %}
+      Data: <a href="https://api.raporty.pse.pl/" rel="noopener">PSE reports API</a>, day-ahead market prices in 15-minute intervals since 14 June 2024.
+      Energy Clock is an independent project and is not affiliated with PSE.
+    {% endblocktranslate %}</p>
+  </div>
+</footer>
+</body>
+</html>

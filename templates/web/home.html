@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n energy %}
+{% block title %}{% translate "Price clock" %} · Energy Clock{% endblock %}
+{% block content %}
+<section class="dash" aria-label="{% translate 'Key figures' %}">
+  <div class="dash-ring" aria-hidden="true">{% include "web/partials/ring.html" with ring=ring %}</div>
+  <dl class="figures">
+    <div class="figure figure--now">
+      <dt>{% translate "Price now" %}</dt>
+      <dd>
+        {% if now_point %}
+          <span class="value num">{{ now_point.price_pln_mwh|money }}</span>
+          <span class="unit">PLN/MWh</span>
+          <span class="meta num">{{ now_point.interval_start_utc|local_hm }}–{{ now_point.dtime_utc|local_hm }}</span>
+        {% else %}
+          <span class="value value--empty">–</span>
+          <span class="meta">{% translate "no price for this moment" %}</span>
+        {% endif %}
+      </dd>
+    </div>
+    <div class="figure">
+      <dt>{% translate "Cheapest 2 h window" %}</dt>
+      <dd>
+        {% if plan.cheapest %}
+          <span class="value num">{{ plan.cheapest.start_utc|local_hm }}</span>
+          <span class="unit num">{{ plan.cheapest.start_utc|relative_day:now }}, {% translate "until" %} {{ plan.cheapest.end_utc|local_hm }}</span>
+          <span class="meta num">{% translate "avg" %} {{ plan.cheapest.avg_price_pln_mwh|money }} PLN/MWh</span>
+        {% else %}
+          <span class="value value--empty">–</span>
+          <span class="meta">{% translate "not enough data ahead" %}</span>
+        {% endif %}
+      </dd>
+    </div>
+    <div class="figure">
+      <dt>{% translate "Most expensive 2 h window" %}</dt>
+      <dd>
+        {% if plan.most_expensive %}
+          <span class="value num">{{ plan.most_expensive.start_utc|local_hm }}</span>
+          <span class="unit num">{{ plan.most_expensive.start_utc|relative_day:now }}, {% translate "until" %} {{ plan.most_expensive.end_utc|local_hm }}</span>
+          <span class="meta num">{% translate "avg" %} {{ plan.most_expensive.avg_price_pln_mwh|money }} PLN/MWh</span>
+        {% else %}
+          <span class="value value--empty">–</span>
+          <span class="meta">{% translate "not enough data ahead" %}</span>
+        {% endif %}
+      </dd>
+    </div>
+    <div class="figure figure--save">
+      <dt>{% translate "Saving vs. starting now" %}</dt>
+      <dd>
+        {% if plan.savings_pln is not None %}
+          <span class="value num">{{ plan.savings_pln|money }}</span>
+          <span class="unit">PLN{% if plan.savings_percent %} <span class="num">({{ plan.savings_percent }} %)</span>{% endif %}</span>
+          <span class="meta">{% if plan.savings_pln == 0 %}{% translate "starting now is already the cheapest option" %}{% else %}{% translate "2 kW appliance, 2 h cycle, estimate" %}{% endif %} · <a href="{% url 'web:planner' %}">{% translate "plan yours" %}</a></span>
+        {% else %}
+          <span class="value value--empty">–</span>
+          <span class="meta"><a href="{% url 'web:planner' %}">{% translate "open the planner" %}</a></span>
+        {% endif %}
+      </dd>
+    </div>
+  </dl>
+</section>
+
+<section id="day-panel" class="panel" aria-live="polite" hx-get="{% url 'web:home' %}?day={{ panel.key }}" hx-trigger="every 300s [document.visibilityState === 'visible']" hx-swap="innerHTML">
+  {% include "web/partials/day_panel.html" %}
+</section>
+{% endblock %}
