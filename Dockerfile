@@ -4,7 +4,7 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV TZ=Europe/Warsaw
 WORKDIR /app
 RUN apt-get update \
- && apt-get install -y --no-install-recommends curl tzdata \
+ && apt-get install -y --no-install-recommends curl tzdata gettext \
  && rm -rf /var/lib/apt/lists/*
 
 FROM base AS dev
