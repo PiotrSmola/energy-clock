@@ -1,0 +1,391 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Energy Clock\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-09 14:24+0200\n"
+"PO-Revision-Date: 2026-09-09 14:20+0200\n"
+"Last-Translator: Energy Clock\n"
+"Language-Team: pl\n"
+"Language: pl\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n==1 ? 0 : (n%10>=2 && n%10<=4) && "
+"(n%100<12 || n%100>14) ? 1 : n!=1 && (n%10>=0 && n%10<=1) || (n%10>=5 && "
+"n%10<=9) || (n%100>=12 && n%100<=14) ? 2 : 3);\n"
+
+msgid "Duration (s)"
+msgstr "Czas trwania (s)"
+
+msgid "Error"
+msgstr "Błąd"
+
+msgid "Local interval end"
+msgstr "Koniec interwału (czas lokalny)"
+
+msgid "Day-ahead prices"
+msgstr "Ceny rynku dnia następnego"
+
+msgid "Generation plan"
+msgstr "Plan generacji"
+
+msgid "Pending"
+msgstr "Oczekuje"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "Failed"
+msgstr "Błąd"
+
+msgid "Partial"
+msgstr "Częściowo"
+
+msgid "Washing machine"
+msgstr "Pralka"
+
+msgid "Dishwasher"
+msgstr "Zmywarka"
+
+msgid "Tumble dryer"
+msgstr "Suszarka"
+
+msgid "EV charging"
+msgstr "Ładowanie EV"
+
+msgid "Heat pump"
+msgstr "Pompa ciepła"
+
+msgid "Water heater"
+msgstr "Bojler"
+
+msgid "Custom appliance"
+msgstr "Własne urządzenie"
+
+msgid "Appliance"
+msgstr "Urządzenie"
+
+msgid "Cycle length (minutes)"
+msgstr "Długość cyklu (minuty)"
+
+msgid "Power draw (kW)"
+msgstr "Pobór mocy (kW)"
+
+msgid "Earliest start"
+msgstr "Najwcześniejszy start"
+
+msgid "Must finish by"
+msgstr "Musi skończyć do"
+
+#, python-format
+msgid "Enter a cycle length between %(low)d and %(high)d minutes."
+msgstr "Podaj długość cyklu od %(low)d do %(high)d minut."
+
+#, python-format
+msgid "Enter a power draw between %(low)s and %(high)s kW."
+msgstr "Podaj pobór mocy od %(low)s do %(high)s kW."
+
+msgid "2 kW appliance"
+msgstr "Urządzenie 2 kW"
+
+#, python-format
+msgid "%(hours)d h %(minutes)d min"
+msgstr "%(hours)d h %(minutes)d min"
+
+#, python-format
+msgid "%(hours)d h"
+msgstr "%(hours)d h"
+
+#, python-format
+msgid "%(minutes)d min"
+msgstr "%(minutes)d min"
+
+msgid "today"
+msgstr "dziś"
+
+msgid "tomorrow"
+msgstr "jutro"
+
+msgid ""
+"When to switch on an appliance to pay less for electricity: Polish day-ahead "
+"prices in 15-minute intervals, with a cheapest-window planner."
+msgstr ""
+"Kiedy włączyć urządzenie, żeby zapłacić mniej za prąd: polskie ceny rynku "
+"dnia następnego w interwałach 15-minutowych i planer najtańszego okna."
+
+msgid "Skip to content"
+msgstr "Przejdź do treści"
+
+msgid "Main navigation"
+msgstr "Nawigacja główna"
+
+msgid "Price clock"
+msgstr "Zegar cen"
+
+msgid "Planner"
+msgstr "Planer"
+
+msgid "Language"
+msgstr "Język"
+
+msgid ""
+"Data: <a href=\"https://api.raporty.pse.pl/\" rel=\"noopener\">PSE reports "
+"API</a>, day-ahead market prices in 15-minute intervals since 14 June 2024. "
+"Energy Clock is an independent project and is not affiliated with PSE."
+msgstr ""
+"Dane: <a href=\"https://api.raporty.pse.pl/\" rel=\"noopener\">API raportów "
+"PSE</a>, ceny rynku dnia następnego w interwałach 15-minutowych od 14 "
+"czerwca 2024. Energy Clock to niezależny projekt, niepowiązany z PSE."
+
+msgid "Key figures"
+msgstr "Najważniejsze liczby"
+
+msgid "Price now"
+msgstr "Cena teraz"
+
+msgid "no price for this moment"
+msgstr "brak ceny dla tej chwili"
+
+msgid "Cheapest 2 h window"
+msgstr "Najtańsze okno 2 h"
+
+msgid "until"
+msgstr "do"
+
+msgid "avg"
+msgstr "śr."
+
+msgid "not enough data ahead"
+msgstr "za mało danych na przód"
+
+msgid "Most expensive 2 h window"
+msgstr "Najdroższe okno 2 h"
+
+msgid "Saving vs. starting now"
+msgstr "Oszczędność wobec startu teraz"
+
+msgid "starting now is already the cheapest option"
+msgstr "start teraz jest już najtańszą opcją"
+
+msgid "2 kW appliance, 2 h cycle, estimate"
+msgstr "urządzenie 2 kW, cykl 2 h, szacunek"
+
+msgid "plan yours"
+msgstr "zaplanuj swoje"
+
+msgid "open the planner"
+msgstr "otwórz planer"
+
+msgid "RES"
+msgstr "OZE"
+
+msgid "Bar chart of prices per 15-minute interval"
+msgstr "Wykres słupkowy cen w interwałach 15-minutowych"
+
+msgid "now"
+msgstr "teraz"
+
+msgid "Day"
+msgstr "Dzień"
+
+msgid "Today"
+msgstr "Dziś"
+
+msgid "Tomorrow"
+msgstr "Jutro"
+
+msgid "Price scale"
+msgstr "Skala cen"
+
+msgid "PLN/MWh, scale from the last 30 days"
+msgstr "PLN/MWh, skala z ostatnich 30 dni"
+
+msgid "Lowest"
+msgstr "Najniższa"
+
+msgid "Highest"
+msgstr "Najwyższa"
+
+msgid "Average"
+msgstr "Średnia"
+
+msgid "Spread"
+msgstr "Rozpiętość"
+
+msgid "Cheapest 2 h"
+msgstr "Najtańsze 2 h"
+
+msgid "Most expensive 2 h"
+msgstr "Najdroższe 2 h"
+
+msgid ""
+"These are wholesale day-ahead market prices published by PSE, not what you "
+"pay on your bill: your supplier adds a margin, and distribution fees, excise "
+"duty and VAT come on top. The clock shows relative differences within the "
+"day; they translate into savings only on a dynamic tariff."
+msgstr ""
+"To hurtowe ceny rynku dnia następnego publikowane przez PSE, a nie to, co "
+"płacisz na fakturze: sprzedawca dokłada marżę, a do tego dochodzą opłaty "
+"dystrybucyjne, akcyza i VAT. Zegar pokazuje względne różnice w ciągu doby; "
+"na oszczędność przekładają się tylko w taryfie dynamicznej."
+
+msgid "All intervals"
+msgstr "Wszystkie interwały"
+
+msgid "Interval"
+msgstr "Interwał"
+
+msgid "Price PLN/MWh"
+msgstr "Cena PLN/MWh"
+
+msgid "RES share"
+msgstr "Udział OZE"
+
+msgid "Tomorrow's prices are not published yet."
+msgstr "Ceny na jutro nie zostały jeszcze opublikowane."
+
+#, python-format
+msgid "PSE usually publishes them around %(at)s."
+msgstr "PSE publikuje je zwykle około %(at)s."
+
+#, python-format
+msgid "The next automatic check runs at %(at)s."
+msgstr "Następne automatyczne sprawdzenie o %(at)s."
+
+msgid "Automatic checks continue with retries."
+msgstr "Automatyczne sprawdzenia są ponawiane."
+
+msgid "Publication is later than usual today."
+msgstr "Publikacja jest dziś późniejsza niż zwykle."
+
+msgid "No price data for this day."
+msgstr "Brak danych o cenach dla tego dnia."
+
+msgid "The import has not run for this day yet, or the source was unavailable."
+msgstr ""
+"Import dla tego dnia jeszcze się nie odbył albo źródło było niedostępne."
+
+#, python-format
+msgid "Last successful update %(ago)s ago"
+msgstr "Ostatnia udana aktualizacja %(ago)s temu"
+
+msgid "No successful update yet"
+msgstr "Jeszcze nie było udanej aktualizacji"
+
+#, python-format
+msgid "published by PSE %(at)s"
+msgstr "opublikowane przez PSE %(at)s"
+
+#, python-format
+msgid "last attempt failed %(at)s, showing cached data"
+msgstr "ostatnia próba nieudana %(at)s, pokazujemy dane z pamięci"
+
+msgid "Data may be stale: the last successful update is more than a day old."
+msgstr "Dane mogą być nieaktualne: ostatnia udana aktualizacja ma ponad dobę."
+
+msgid ""
+"The result appears here: the cheapest start time, the cost, and how much you "
+"save compared with starting right now."
+msgstr ""
+"Tu pojawi się wynik: najtańsza godzina startu, koszt i ile oszczędzasz "
+"względem włączenia od razu."
+
+msgid "Check the highlighted fields."
+msgstr "Sprawdź zaznaczone pola."
+
+msgid "No price data available for the coming hours."
+msgstr "Brak danych o cenach na najbliższe godziny."
+
+msgid "Start at"
+msgstr "Włącz o"
+
+msgid "done by"
+msgstr "koniec o"
+
+msgid "Cost in this window"
+msgstr "Koszt w tym oknie"
+
+msgid "Cost if started now"
+msgstr "Koszt przy starcie teraz"
+
+msgid "More than starting now"
+msgstr "Drożej niż start teraz"
+
+msgid ""
+"starting right now would be cheaper, but it falls outside your constraints"
+msgstr "start od razu byłby tańszy, ale wypada poza Twoimi ograniczeniami"
+
+msgid "You save"
+msgstr "Oszczędzasz"
+
+msgid "Average price in window"
+msgstr "Średnia cena w oknie"
+
+msgid "Carbon footprint"
+msgstr "Ślad węglowy"
+
+msgid "Most expensive option"
+msgstr "Najdroższa opcja"
+
+msgid "not before"
+msgstr "nie wcześniej niż"
+
+msgid "finish by"
+msgstr "koniec do"
+
+msgid ""
+"Estimate at wholesale day-ahead prices, assuming constant power draw for the "
+"whole cycle. Your bill adds supplier margin, distribution fees and taxes."
+msgstr ""
+"Szacunek po hurtowych cenach rynku dnia następnego, przy założeniu stałego "
+"poboru mocy przez cały cykl. Na fakturze dochodzą marża sprzedawcy, opłaty "
+"dystrybucyjne i podatki."
+
+msgid "No window fits these constraints in the available data."
+msgstr "Żadne okno nie mieści się w tych ograniczeniach w dostępnych danych."
+
+msgid "Try a later deadline or a shorter cycle."
+msgstr "Spróbuj późniejszego terminu albo krótszego cyklu."
+
+#, python-format
+msgid ""
+"Prices are known until %(at)s %(day)s; tomorrow's prices appear around 14:00."
+msgstr ""
+"Ceny znane są do %(at)s %(day)s; ceny na jutro pojawiają się około 14:00."
+
+msgid "Appliance planner"
+msgstr "Planer urządzeń"
+
+msgid ""
+"Pick an appliance or set your own cycle. The cheapest start time is computed "
+"on the server from the published prices."
+msgstr ""
+"Wybierz urządzenie albo ustaw własny cykl. Najtańsza godzina startu jest "
+"liczona na serwerze z opublikowanych cen."
+
+msgid "Cycle length"
+msgstr "Długość cyklu"
+
+msgid "Cycle length slider"
+msgstr "Suwak długości cyklu"
+
+msgid "minutes"
+msgstr "minuty"
+
+msgid "Power draw"
+msgstr "Pobór mocy"
+
+msgid "Power slider"
+msgstr "Suwak mocy"
+
+msgid "optional, local time"
+msgstr "opcjonalnie, czas lokalny"
+
+msgid "optional, e.g. 07:00 to be done by morning"
+msgstr "opcjonalnie, np. 07:00, żeby skończyć do rana"
+
+msgid "at the current price"
+msgstr "po bieżącej cenie"
+
+msgid "Find the cheapest window"
+msgstr "Znajdź najtańsze okno"
