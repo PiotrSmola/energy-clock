@@ -1,7 +1,9 @@
+import json
 import logging
 import time
 from collections.abc import Callable, Iterator
 from datetime import date
+from decimal import Decimal
 from types import TracebackType
 from typing import Any, Self
 from urllib.parse import quote, urlencode
@@ -110,5 +112,5 @@ class PseClient:
             return f"HTTP {response.status_code}"
         if response.status_code >= 400:
             raise PseApiError(f"PSE request rejected with HTTP {response.status_code}: {url}")
-        payload: dict[str, Any] = response.json()
+        payload: dict[str, Any] = json.loads(response.content, parse_float=Decimal)
         return payload
