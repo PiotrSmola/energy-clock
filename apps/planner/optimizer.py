@@ -3,6 +3,7 @@ from collections.abc import Iterable, Iterator, Sequence
 from dataclasses import dataclass
 from datetime import datetime, timedelta
 from decimal import ROUND_HALF_UP, Decimal
+from typing import Literal
 
 from apps.market.timeutils import INTERVAL
 
@@ -184,6 +185,38 @@ def greenest_window(
         key=lambda window: (window.carbon_g, window.start_utc),
         default=None,
     )
+
+
+def overlaps(first: Window, second: Window) -> bool:
+    return first.start_utc < second.end_utc and second.start_utc < first.end_utc
+
+
+def ranked_windows(
+    prices: Iterable[PriceSlot],
+    duration_minutes: int,
+    power_kw: Decimal,
+    *,
+    by: Literal["cost", "carbon"],
+    generation: Iterable[CarbonSlot] | None = None,
+    limit: int = 5,
+    not_before: datetime | None = None,
+    not_after: datetime | None = None,
+) -> list[Window]:
+    slots = with_carbon(prices, generation) if generation is not None else sorted_slots(prices)
+    candidates = list(candidate_windows(slots, duration_minutes, power_kw, not_before, not_after))
+    if by == "carbon":
+        candidates = [window for window in candidates if window.carbon_g is not None]
+        candidates.sort(key=lambda window: (window.carbon_g, window.start_utc))
+    else:
+        candidates.sort(key=lambda window: (window.cost_pln, window.start_utc))
+    chosen: list[Window] = []
+    for window in candidates:
+        if any(overlaps(window, picked) for picked in chosen):
+            continue
+        chosen.append(window)
+        if len(chosen) >= limit:
+            break
+    return chosen
 
 
 def window_starting_at(
