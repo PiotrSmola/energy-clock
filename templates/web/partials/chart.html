@@ -2,12 +2,18 @@
 <figure class="chart{% if compact %} chart--compact{% endif %}" data-label-res="{% translate 'RES' %}">
   <div class="chart-scroll">
     <svg class="chart-svg" viewBox="0 0 {{ chart.width }} {{ chart.height }}" role="img" aria-label="{% translate 'Bar chart of prices per 15-minute interval' %}" focusable="false" data-start="{{ chart.span_start_epoch|unlocalize }}" data-end="{{ chart.span_end_epoch|unlocalize }}" data-left="{{ chart.left|unlocalize }}" data-right="{{ chart.right|unlocalize }}">
+      <defs>
+        <pattern id="hatch" patternUnits="userSpaceOnUse" width="6" height="6" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" class="hatch-line"/></pattern>
+      </defs>
       <g class="grid">
         {% for tick in chart.y_ticks %}<line x1="{{ chart.left|unlocalize }}" x2="{{ chart.right|unlocalize }}" y1="{{ tick.position|unlocalize }}" y2="{{ tick.position|unlocalize }}"/><text x="{{ chart.label_x|unlocalize }}" y="{{ tick.position|unlocalize }}" text-anchor="end" dominant-baseline="middle">{{ tick.label }}</text>
         {% endfor %}
       </g>
       {% if chart.window_x1 is not None %}
       <rect class="win" x="{{ chart.window_x1|unlocalize }}" y="{{ chart.top|unlocalize }}" width="{{ chart.window_width|unlocalize }}" height="{{ chart.plot_height|unlocalize }}"/>
+      {% endif %}
+      {% if chart.secondary_x1 is not None %}
+      <rect class="win win--clean" x="{{ chart.secondary_x1|unlocalize }}" y="{{ chart.top|unlocalize }}" width="{{ chart.secondary_width|unlocalize }}" height="{{ chart.plot_height|unlocalize }}"/>
       {% endif %}
       <g class="bars">
         {% for bar in chart.bars %}<rect class="bar b{{ bar.bucket }}{% if bar.negative %} bar--neg{% endif %}{% if bar.in_window %} bar--win{% endif %}{% if bar.is_now %} bar--now{% endif %}" x="{{ bar.x|unlocalize }}" y="{{ bar.y|unlocalize }}" width="{{ bar.width|unlocalize }}" height="{{ bar.height|unlocalize }}" style="--i:{{ bar.index }}" data-t="{{ bar.start_local|date:'H:i' }}–{{ bar.end_local|date:'H:i' }}" data-d="{{ bar.start_local|date:'j E' }}" data-p="{{ bar.price }}" data-r="{{ bar.res_share|default_if_none:'' }}"><title>{{ bar.start_local|date:'H:i' }}–{{ bar.end_local|date:'H:i' }}: {{ bar.price }} PLN/MWh{% if bar.res_share is not None %}, {% translate "RES" %} {{ bar.res_share }}%{% endif %}</title></rect>

@@ -1,4 +1,4 @@
-from datetime import datetime, time, timedelta
+from datetime import date, datetime, time, timedelta
 from decimal import Decimal
 from typing import Any
 
@@ -8,6 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.market.timeutils import WARSAW, to_local
 from apps.planner.models import Appliance
 from apps.planner.services import PlanRequest
+from apps.planner.tariff import DailyProfile, builtin_profiles, custom_profile
 
 MIN_DURATION_MINUTES = 15
 MAX_DURATION_MINUTES = 24 * 60
@@ -91,6 +92,86 @@ class PlannerForm(forms.Form):
             not_after=not_after,
             label=str(data["label"]),
         )
+
+
+HOURS = range(24)
+DEFAULT_HOURLY_SHAPE = (2, 1, 1, 1, 1, 2, 4, 6, 5, 4, 4, 4, 4, 4, 4, 5, 6, 8, 9, 8, 7, 6, 4, 3)
+MIN_MONTHLY_KWH = Decimal("10")
+MAX_MONTHLY_KWH = Decimal("100000")
+MIN_FIXED_PRICE = Decimal("0.01")
+MAX_FIXED_PRICE = Decimal("10")
+MAX_HOURLY_LEVEL = 10
+
+
+class TariffForm(forms.Form):
+    monthly_kwh = forms.DecimalField(
+        min_value=MIN_MONTHLY_KWH,
+        max_value=MAX_MONTHLY_KWH,
+        decimal_places=1,
+        max_digits=8,
+        initial=Decimal("250"),
+        label=_("Monthly consumption (kWh)"),
+    )
+    fixed_price_pln_kwh = forms.DecimalField(
+        min_value=MIN_FIXED_PRICE,
+        max_value=MAX_FIXED_PRICE,
+        decimal_places=4,
+        max_digits=6,
+        initial=Decimal("0.90"),
+        label=_("Your fixed energy price (PLN/kWh)"),
+    )
+    profile = forms.ChoiceField(
+        choices=(
+            ("flat", _("Even, all day")),
+            ("day", _("Daytime, 06:00 to 22:00")),
+            ("night", _("Night, 22:00 to 06:00")),
+            ("custom", _("Custom, hour by hour")),
+        ),
+        initial="flat",
+        label=_("Daily profile"),
+    )
+    start = forms.DateField(required=False, label=_("From"))
+    end = forms.DateField(required=False, label=_("To"))
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        for hour in HOURS:
+            self.fields[f"h{hour}"] = forms.IntegerField(
+                required=False,
+                min_value=0,
+                max_value=MAX_HOURLY_LEVEL,
+                initial=DEFAULT_HOURLY_SHAPE[hour],
+            )
+
+    def hourly_levels(self) -> list[int]:
+        levels: list[int] = []
+        for hour in HOURS:
+            value = self.cleaned_data.get(f"h{hour}") if self.is_bound else None
+            levels.append(DEFAULT_HOURLY_SHAPE[hour] if value is None else int(value))
+        return levels
+
+    def clean(self) -> dict[str, Any]:
+        data: dict[str, Any] = super().clean() or {}
+        start = data.get("start")
+        end = data.get("end")
+        if start and end and end < start:
+            self.add_error("end", _("The end date must not be before the start date."))
+        if data.get("profile") == "custom" and sum(self.hourly_levels()) <= 0:
+            self.add_error("profile", _("Set at least one hour above zero."))
+        return data
+
+    def to_profile(self) -> DailyProfile:
+        key = self.cleaned_data.get("profile") or "flat"
+        if key == "custom":
+            return custom_profile(self.hourly_levels())
+        return builtin_profiles()[key]
+
+    def period(self, today: date) -> tuple[date, date]:
+        end = self.cleaned_data.get("end") or today - timedelta(days=1)
+        start = self.cleaned_data.get("start") or (
+            end.replace(day=1) - timedelta(days=365)
+        ).replace(day=1)
+        return start, end
 
 
 def next_local_occurrence(clock: time, after: datetime) -> datetime:

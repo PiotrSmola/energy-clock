@@ -1,0 +1,70 @@
+{% load i18n energy %}
+<div class="panel-head">
+  <nav class="daynav" aria-label="{% translate 'Day' %}">
+    <a href="{% url 'web:mix' %}?day={{ previous_day|date:'Y-m-d' }}" hx-get="{% url 'web:mix' %}?day={{ previous_day|date:'Y-m-d' }}" hx-target="#mix-panel" hx-swap="innerHTML transition:true" hx-push-url="true" rel="prev">‹ {% translate "Previous day" %}</a>
+    <form method="get" action="{% url 'web:mix' %}" hx-get="{% url 'web:mix' %}" hx-target="#mix-panel" hx-swap="innerHTML transition:true" hx-push-url="true" hx-trigger="change">
+      <label class="sr-only" for="mix-day">{% translate "Day" %}</label>
+      <input type="date" id="mix-day" name="day" value="{{ summary.day|date:'Y-m-d' }}" min="2024-06-14">
+      <noscript><button type="submit" class="btn btn--small">{% translate "Show" %}</button></noscript>
+    </form>
+    <a href="{% url 'web:mix' %}?day={{ next_day|date:'Y-m-d' }}" hx-get="{% url 'web:mix' %}?day={{ next_day|date:'Y-m-d' }}" hx-target="#mix-panel" hx-swap="innerHTML transition:true" hx-push-url="true" rel="next">{% translate "Next day" %} ›</a>
+  </nav>
+  <h1 class="panel-title">{% translate "Generation mix" %} · {{ summary.day|date:"l, j E Y" }}</h1>
+  <div class="panel-progress" aria-hidden="true"></div>
+</div>
+
+{% if summary.available %}
+  <dl class="daystats">
+    <div><dt>{% translate "RES share, day average" %}</dt><dd class="num">{% if summary.res_avg is not None %}{{ summary.res_avg }} %{% else %}–{% endif %}</dd></div>
+    <div><dt>{% translate "Cleanest interval" %}</dt><dd class="num">{% if summary.cleanest %}≈ {{ summary.cleanest.carbon_g_kwh }} <small>g/kWh, {{ summary.cleanest.start_local|date:"H:i" }}</small>{% else %}–{% endif %}</dd></div>
+    <div><dt>{% translate "Dirtiest interval" %}</dt><dd class="num">{% if summary.dirtiest %}≈ {{ summary.dirtiest.carbon_g_kwh }} <small>g/kWh, {{ summary.dirtiest.start_local|date:"H:i" }}</small>{% else %}–{% endif %}</dd></div>
+    <div><dt>{% translate "Solar peak" %}</dt><dd class="num">{% if summary.pv_peak.pv_mw is not None %}{{ summary.pv_peak.pv_mw|money:0 }} <small>MW, {{ summary.pv_peak.start_local|date:"H:i" }}</small>{% else %}–{% endif %}</dd></div>
+    <div><dt>{% translate "Wind peak" %}</dt><dd class="num">{% if summary.wind_peak.wind_mw is not None %}{{ summary.wind_peak.wind_mw|money:0 }} <small>MW, {{ summary.wind_peak.start_local|date:"H:i" }}</small>{% else %}–{% endif %}</dd></div>
+    <div><dt>{% translate "Demand peak" %}</dt><dd class="num">{% if summary.demand_peak.demand_mw is not None %}{{ summary.demand_peak.demand_mw|money:0 }} <small>MW, {{ summary.demand_peak.start_local|date:"H:i" }}</small>{% else %}–{% endif %}</dd></div>
+  </dl>
+
+  {% include "web/partials/mix_chart.html" with chart=summary.chart %}
+
+  <div class="legend" aria-label="{% translate 'Legend' %}">
+    <span class="legend-item"><i class="swatch swatch--pv"></i>{% translate "Solar PV" %}</span>
+    <span class="legend-item"><i class="swatch swatch--wind"></i>{% translate "Wind" %}</span>
+    <span class="legend-item"><i class="swatch swatch--conventional"></i>{% translate "Conventional units" %}</span>
+    <span class="legend-item"><i class="swatch swatch--carbon"></i>{% translate "Carbon intensity, right axis" %}</span>
+    <span class="legend-note">{% translate "PSE generation plan, MW per 15-minute interval" %}</span>
+  </div>
+
+  <p class="disclaimer">{% blocktranslate trimmed %}
+    Carbon intensity is approximate: it is derived from the planned generation mix with 0 g/kWh for solar and wind and 750 g/kWh for conventional units, ignoring imports and grid losses.
+    The plan is published by PSE and revised during the day.
+  {% endblocktranslate %}</p>
+
+  {% include "web/partials/freshness.html" with freshness=freshness published_at=summary.published_at %}
+
+  <details class="intervals">
+    <summary>{% translate "All intervals" %} <span class="num">({{ summary.rows|length }})</span></summary>
+    <div class="table-scroll">
+      <table class="num">
+        <thead><tr><th scope="col">{% translate "Interval" %}</th><th scope="col">PV MW</th><th scope="col">{% translate "Wind" %} MW</th><th scope="col">{% translate "Conventional" %} MW</th><th scope="col">{% translate "Demand" %} MW</th><th scope="col">≈ gCO₂/kWh</th><th scope="col">{% translate "RES share" %}</th></tr></thead>
+        <tbody>
+          {% for row in summary.rows %}
+          <tr>
+            <td>{{ row.start_local|date:"H:i" }}–{{ row.end_local|date:"H:i" }}</td>
+            <td>{{ row.pv_mw|money:0 }}</td>
+            <td>{{ row.wind_mw|money:0 }}</td>
+            <td>{{ row.conventional_mw|money:0 }}</td>
+            <td>{{ row.demand_mw|money:0 }}</td>
+            <td>{{ row.carbon_g_kwh|default_if_none:"–" }}</td>
+            <td>{% if row.res_share is not None %}{{ row.res_share }} %{% else %}–{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </details>
+{% else %}
+  <div class="empty">
+    <p class="empty-title">{% translate "No generation plan for this day." %}</p>
+    <p>{% if summary.day > today %}{% translate "PSE publishes the plan for the next day in the afternoon; the hourly import will pick it up." %}{% else %}{% translate "The import has not run for this day yet, or the source was unavailable." %}{% endif %}</p>
+    {% include "web/partials/freshness.html" with freshness=freshness published_at=None %}
+  </div>
+{% endif %}

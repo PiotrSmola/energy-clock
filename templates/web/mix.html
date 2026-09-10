@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Generation mix" %} · Energy Clock{% endblock %}
+{% block content %}
+<section id="mix-panel" class="panel panel--top" aria-live="polite">
+  {% include "web/partials/mix_panel.html" %}
+</section>
+{% endblock %}

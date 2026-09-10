@@ -1,0 +1,62 @@
+{% load i18n energy %}
+<div class="panel-progress" aria-hidden="true"></div>
+{% if not form.is_valid %}
+  <div class="result result--idle"><p class="muted">{% translate "Check the highlighted fields." %}</p></div>
+{% elif not comparison.months %}
+  <div class="result result--empty">
+    <p class="empty-title">{% translate "No price data in this period." %}</p>
+    <p class="muted">{% translate "Prices are available from 14 June 2024, when the Polish 15-minute market started." %}</p>
+  </div>
+{% else %}
+  <article class="result">
+    <p class="result-kicker">{{ period.0|date:"j E Y" }} – {{ period.1|date:"j E Y" }} · {{ comparison.profile.label }} · <span class="num">{{ comparison.monthly_kwh|money:0 }} kWh</span> {% translate "per month" %}</p>
+    <p class="verdict">
+      {% if comparison.cheaper == 'dynamic' %}
+        {% blocktranslate trimmed with amount=comparison.total_difference_pln|money %}A dynamic tariff would have been <strong>{{ amount }} PLN cheaper</strong> over this period.{% endblocktranslate %}
+      {% elif comparison.cheaper == 'fixed' %}
+        {% blocktranslate trimmed with amount=comparison.total_difference_pln|money %}Your fixed price would have been <strong>{{ amount }} PLN cheaper</strong> over this period.{% endblocktranslate %}
+      {% else %}
+        {% translate "Both tariffs would have cost the same over this period." %}
+      {% endif %}
+    </p>
+    <dl class="totals">
+      <div class="{% if comparison.cheaper == 'dynamic' %}better{% endif %}"><dt>{% translate "Dynamic tariff" %}</dt><dd class="num">{{ comparison.total_dynamic_pln|money }} <small>PLN</small></dd></div>
+      <div class="{% if comparison.cheaper == 'fixed' %}better{% endif %}"><dt>{% translate "Fixed price" %}</dt><dd class="num">{{ comparison.total_fixed_pln|money }} <small>PLN</small></dd></div>
+      <div><dt>{% translate "Difference" %}</dt><dd class="num">{{ comparison.total_difference_pln|money }} <small>PLN</small></dd></div>
+      <div><dt>{% translate "Energy" %}</dt><dd class="num">{{ comparison.total_energy_kwh|money:0 }} <small>kWh</small></dd></div>
+      <div><dt>{% translate "Average dynamic price" %}</dt><dd class="num">{% if comparison.total_energy_kwh %}{{ comparison.total_dynamic_pln|div_by:comparison.total_energy_kwh|money:3 }} <small>PLN/kWh</small>{% else %}–{% endif %}</dd></div>
+    </dl>
+
+    {% if chart %}
+      {% include "web/partials/bars.html" with chart=chart unit="PLN" show_values=True aria_label=_("Monthly difference between fixed and dynamic cost") label_step=1 %}
+      <div class="legend">
+        <span class="legend-item"><i class="swatch b0"></i>{% translate "dynamic cheaper" %}</span>
+        <span class="legend-item"><i class="swatch b6"></i>{% translate "fixed cheaper" %}</span>
+        <span class="legend-note">{% translate "PLN per month, fixed minus dynamic" %}</span>
+      </div>
+    {% endif %}
+
+    <div class="table-scroll">
+      <table class="num months">
+        <thead><tr><th scope="col">{% translate "Month" %}</th><th scope="col">{% translate "Days" %}</th><th scope="col">kWh</th><th scope="col">{% translate "Dynamic" %} PLN</th><th scope="col">{% translate "Fixed" %} PLN</th><th scope="col">{% translate "Difference" %} PLN</th><th scope="col">{% translate "Avg dynamic" %} PLN/kWh</th></tr></thead>
+        <tbody>
+          {% for month in comparison.months %}
+          <tr{% if not month.complete %} class="incomplete"{% endif %}>
+            <td>{{ month.first_day|date:"F Y" }}</td>
+            <td>{{ month.days_covered }}/{{ month.days_in_month }}</td>
+            <td>{{ month.energy_kwh|money:0 }}</td>
+            <td>{{ month.dynamic_cost_pln|money }}</td>
+            <td>{{ month.fixed_cost_pln|money }}</td>
+            <td class="{% if month.difference_pln >= 0 %}pos{% else %}neg{% endif %}">{{ month.difference_pln|money }}</td>
+            <td>{{ month.avg_dynamic_price_pln_kwh|money:3 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    <p class="disclaimer">{% blocktranslate trimmed %}
+      Wholesale day-ahead prices only, before supplier margin, distribution fees, excise duty and VAT; compare them with the energy component of your fixed price, not the whole bill.
+      Months with fewer days than the calendar are scaled proportionally. History starts in June 2024.
+    {% endblocktranslate %}</p>
+  </article>
+{% endif %}

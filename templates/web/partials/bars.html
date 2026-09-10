@@ -1,0 +1,26 @@
+{% load i18n l10n %}
+<figure class="bars{% if compact %} bars--compact{% endif %}">
+  <div class="chart-scroll">
+    <svg class="chart-svg" viewBox="0 0 {{ chart.width }} {{ chart.height }}" role="img" aria-label="{{ aria_label }}" focusable="false">
+      <g class="grid">
+        {% for tick in chart.y_ticks %}<line x1="{{ chart.left|unlocalize }}" x2="{{ chart.right|unlocalize }}" y1="{{ tick.position|unlocalize }}" y2="{{ tick.position|unlocalize }}"/><text x="{{ chart.label_x|unlocalize }}" y="{{ tick.position|unlocalize }}" text-anchor="end" dominant-baseline="middle">{{ tick.label }}</text>
+        {% endfor %}
+      </g>
+      <g class="bars-set">
+        {% for bar in chart.bars %}<rect class="bar {{ bar.css_class }}{% if bar.negative %} bar--neg{% endif %}" x="{{ bar.x|unlocalize }}" y="{{ bar.y|unlocalize }}" width="{{ bar.width|unlocalize }}" height="{{ bar.height|unlocalize }}" style="--i:{{ forloop.counter0 }}"><title>{{ bar.label }}: {{ bar.value_text }}{% if unit %} {{ unit }}{% endif %}</title></rect>
+        {% endfor %}
+      </g>
+      <line class="axis" x1="{{ chart.left|unlocalize }}" x2="{{ chart.right|unlocalize }}" y1="{{ chart.zero_y|unlocalize }}" y2="{{ chart.zero_y|unlocalize }}"/>
+      {% if show_values %}
+      <g class="values">
+        {% for bar in chart.bars %}<text x="{{ bar.center_x|unlocalize }}" y="{{ bar.value_y|unlocalize }}" text-anchor="middle">{{ bar.value_text }}</text>
+        {% endfor %}
+      </g>
+      {% endif %}
+      <g class="xlabels">
+        {% for bar in chart.bars %}<text x="{{ bar.center_x|unlocalize }}" y="{{ chart.x_label_y|unlocalize }}" text-anchor="middle">{{ bar.label }}</text>
+        {% endfor %}
+      </g>
+    </svg>
+  </div>
+</figure>

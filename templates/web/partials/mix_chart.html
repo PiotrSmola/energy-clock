@@ -1,0 +1,32 @@
+{% load i18n l10n %}
+<figure class="chart chart--mix">
+  <div class="chart-scroll">
+    <svg class="chart-svg" viewBox="0 0 {{ chart.width }} {{ chart.height }}" role="img" aria-label="{% translate 'Stacked area chart of planned generation by source with carbon intensity line' %}" focusable="false" data-start="{{ chart.span_start_epoch|unlocalize }}" data-end="{{ chart.span_end_epoch|unlocalize }}" data-left="{{ chart.left|unlocalize }}" data-right="{{ chart.right|unlocalize }}">
+      <g class="grid">
+        {% for tick in chart.y_ticks %}<line x1="{{ chart.left|unlocalize }}" x2="{{ chart.right|unlocalize }}" y1="{{ tick.position|unlocalize }}" y2="{{ tick.position|unlocalize }}"/><text x="{{ chart.label_x|unlocalize }}" y="{{ tick.position|unlocalize }}" text-anchor="end" dominant-baseline="middle">{{ tick.label }}</text>
+        {% endfor %}
+        {% for tick in chart.carbon_ticks %}<text class="right" x="{{ chart.right_label_x|unlocalize }}" y="{{ tick.position|unlocalize }}" text-anchor="start" dominant-baseline="middle">{{ tick.label }}</text>
+        {% endfor %}
+      </g>
+      <g class="layers">
+        {% for layer in chart.layers %}<polygon class="layer layer--{{ layer.key }}" points="{{ layer.points }}"><title>{% if layer.key == 'pv' %}{% translate "Solar PV" %}{% elif layer.key == 'wind' %}{% translate "Wind" %}{% else %}{% translate "Conventional" %}{% endif %}</title></polygon>
+        {% endfor %}
+      </g>
+      {% for segment in chart.carbon_segments %}<polyline class="carbon-line" points="{{ segment }}"/>
+      {% endfor %}
+      <line class="axis" x1="{{ chart.left|unlocalize }}" x2="{{ chart.right|unlocalize }}" y1="{{ chart.bottom|unlocalize }}" y2="{{ chart.bottom|unlocalize }}"/>
+      <g class="xlabels">
+        {% for tick in chart.x_ticks %}<text x="{{ tick.position|unlocalize }}" y="{{ chart.x_label_y|unlocalize }}" text-anchor="middle">{{ tick.label }}</text>
+        {% endfor %}
+      </g>
+      <text class="axis-title" x="{{ chart.label_x|unlocalize }}" y="{{ chart.top|add:-6|unlocalize }}" text-anchor="end">MW</text>
+      <text class="axis-title" x="{{ chart.right_label_x|unlocalize }}" y="{{ chart.top|add:-6|unlocalize }}" text-anchor="start">gCO₂/kWh</text>
+      {% if chart.now_x is not None %}
+      <g class="now-marker">
+        <line x1="{{ chart.now_x|unlocalize }}" x2="{{ chart.now_x|unlocalize }}" y1="{{ chart.top|unlocalize }}" y2="{{ chart.bottom|unlocalize }}"/>
+        <circle cx="{{ chart.now_x|unlocalize }}" cy="{{ chart.top|unlocalize }}" r="4"/>
+      </g>
+      {% endif %}
+    </svg>
+  </div>
+</figure>

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% load i18n energy %}
+{% block title %}{% translate "Tariff calculator" %} · Energy Clock{% endblock %}
+{% block content %}
+<div class="tariff">
+  <section class="tariff-form">
+    <h1>{% translate "Tariff calculator" %}</h1>
+    <p class="lead">{% translate "Would a dynamic tariff have paid off for you? Enter your consumption and fixed price; the calculator replays the published prices month by month." %}</p>
+    <form method="get" action="{% url 'web:tariff' %}"
+          hx-get="{% url 'web:tariff_result' %}" hx-target="#tariff-result" hx-swap="innerHTML transition:true"
+          hx-trigger="submit, change, input delay:600ms" hx-sync="this:replace" hx-indicator="#tariff-result"
+          x-data="{ profile: '{{ form.profile.value|default:'flat' }}', levels: {{ hourly_levels }} }" novalidate>
+      <div class="field-row">
+        <div class="field">
+          <label for="id_monthly_kwh">{% translate "Monthly consumption" %}</label>
+          <input type="number" name="monthly_kwh" id="id_monthly_kwh" min="10" max="100000" step="10" inputmode="decimal" value="{{ form.monthly_kwh.value|default:'250' }}">
+          <p class="hint">kWh</p>
+          {% for error in form.monthly_kwh.errors %}<p class="error">{{ error }}</p>{% endfor %}
+        </div>
+        <div class="field">
+          <label for="id_fixed_price_pln_kwh">{% translate "Your fixed energy price" %}</label>
+          <input type="number" name="fixed_price_pln_kwh" id="id_fixed_price_pln_kwh" min="0.01" max="10" step="0.01" inputmode="decimal" value="{{ form.fixed_price_pln_kwh.value|default:'0.90' }}">
+          <p class="hint">{% translate "PLN/kWh, energy component only" %}</p>
+          {% for error in form.fixed_price_pln_kwh.errors %}<p class="error">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+      <fieldset class="field">
+        <legend>{% translate "Daily profile" %}</legend>
+        <div class="radios">
+          {% for value, text in form.fields.profile.choices %}
+          <label><input type="radio" name="profile" value="{{ value }}" x-model="profile"{% if form.profile.value|default:'flat' == value %} checked{% endif %}> {{ text }}</label>
+          {% endfor %}
+        </div>
+        {% for error in form.profile.errors %}<p class="error">{{ error }}</p>{% endfor %}
+      </fieldset>
+      <div class="custom-profile" x-show="profile === 'custom'" x-cloak>
+        <div class="shape" aria-hidden="true">
+          <template x-for="(level, hour) in levels" :key="hour"><i :style="`height:${level * 10}%`"></i></template>
+        </div>
+        <div class="hourly">
+          {% for hour in hours %}
+          <label><span class="num">{{ hour|stringformat:"02d" }}</span><input type="range" name="h{{ hour }}" min="0" max="10" step="1" x-model.number="levels[{{ hour }}]"><span class="num" x-text="levels[{{ hour }}]"></span></label>
+          {% endfor %}
+        </div>
+        <p class="hint">{% translate "Relative weight per hour, 0 to 10. The shape is scaled to your monthly consumption." %}</p>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="id_start">{% translate "From" %}</label>
+          <input type="date" name="start" id="id_start" min="2024-06-14" value="{{ form.start.value|date:'Y-m-d'|default:'' }}">
+        </div>
+        <div class="field">
+          <label for="id_end">{% translate "To" %}</label>
+          <input type="date" name="end" id="id_end" min="2024-06-14" value="{{ form.end.value|date:'Y-m-d'|default:'' }}">
+          {% for error in form.end.errors %}<p class="error">{{ error }}</p>{% endfor %}
+        </div>
+      </div>
+      <p class="hint">{% translate "Leave the dates empty for the last twelve months." %}</p>
+      <button type="submit" class="btn btn--primary">{% translate "Recalculate" %}</button>
+    </form>
+  </section>
+  <section id="tariff-result" class="tariff-result" aria-live="polite">
+    {% include "web/partials/tariff_result.html" %}
+  </section>
+</div>
+{% endblock %}

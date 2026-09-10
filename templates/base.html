@@ -28,6 +28,10 @@
     <nav class="nav" aria-label="{% translate 'Main navigation' %}">
       <a href="{% url 'web:home' %}"{% if nav == 'home' %} aria-current="page"{% endif %}>{% translate "Price clock" %}</a>
       <a href="{% url 'web:planner' %}"{% if nav == 'planner' %} aria-current="page"{% endif %}>{% translate "Planner" %}</a>
+      <a href="{% url 'web:compare' %}"{% if nav == 'compare' %} aria-current="page"{% endif %}>{% translate "Cheap vs. clean" %}</a>
+      <a href="{% url 'web:mix' %}"{% if nav == 'mix' %} aria-current="page"{% endif %}>{% translate "Generation mix" %}</a>
+      <a href="{% url 'web:tariff' %}"{% if nav == 'tariff' %} aria-current="page"{% endif %}>{% translate "Tariff" %}</a>
+      <a href="{% url 'web:stats' %}"{% if nav == 'stats' %} aria-current="page"{% endif %}>{% translate "Statistics" %}</a>
     </nav>
     <form class="lang" action="{% url 'set_language' %}" method="post" aria-label="{% translate 'Language' %}">
       {% csrf_token %}

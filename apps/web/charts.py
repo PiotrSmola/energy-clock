@@ -66,6 +66,14 @@ class ChartModel:
     y_max: Decimal
     span_start: datetime
     span_end: datetime
+    secondary_x1: float | None = None
+    secondary_x2: float | None = None
+
+    @property
+    def secondary_width(self) -> float:
+        if self.secondary_x1 is None or self.secondary_x2 is None:
+            return 0.0
+        return round(self.secondary_x2 - self.secondary_x1, 2)
 
     @property
     def span_start_epoch(self) -> int:
@@ -126,6 +134,7 @@ def build_chart(
     window: Window | None = None,
     span: tuple[datetime, datetime] | None = None,
     compact: bool = False,
+    secondary_window: Window | None = None,
 ) -> ChartModel:
     height = COMPACT_HEIGHT if compact else CHART_HEIGHT
     left, right = float(MARGIN_LEFT), float(CHART_WIDTH - MARGIN_RIGHT)
@@ -178,10 +187,8 @@ def build_chart(
         tick_value += step
     x_ticks = build_x_ticks(span_start, span_end, x_of, compact)
     now_x = round(x_of(now), 2) if now is not None and span_start <= now <= span_end else None
-    window_x1 = window_x2 = None
-    if window is not None and window.end_utc > span_start and window.start_utc < span_end:
-        window_x1 = round(x_of(max(window.start_utc, span_start)), 2)
-        window_x2 = round(x_of(min(window.end_utc, span_end)), 2)
+    window_x1, window_x2 = window_span(window, span_start, span_end, x_of)
+    secondary_x1, secondary_x2 = window_span(secondary_window, span_start, span_end, x_of)
     return ChartModel(
         width=CHART_WIDTH,
         height=height,
@@ -200,6 +207,22 @@ def build_chart(
         y_max=y_max,
         span_start=span_start,
         span_end=span_end,
+        secondary_x1=secondary_x1,
+        secondary_x2=secondary_x2,
+    )
+
+
+def window_span(
+    window: Window | None,
+    span_start: datetime,
+    span_end: datetime,
+    x_of: Callable[[datetime], float],
+) -> tuple[float | None, float | None]:
+    if window is None or window.end_utc <= span_start or window.start_utc >= span_end:
+        return None, None
+    return (
+        round(x_of(max(window.start_utc, span_start)), 2),
+        round(x_of(min(window.end_utc, span_end)), 2),
     )
 
 
@@ -218,6 +241,291 @@ def build_x_ticks(
             ticks.append(Tick(round(x_of(cursor), 2), f"{local:%H}"))
         cursor += INTERVAL
     return ticks
+
+
+MIX_HEIGHT = 300
+MIX_RIGHT_MARGIN = 56
+MW_STEPS = (
+    Decimal(500),
+    Decimal(1000),
+    Decimal(2000),
+    Decimal(2500),
+    Decimal(5000),
+    Decimal(10000),
+)
+CARBON_STEPS = (Decimal(50), Decimal(100), Decimal(200), Decimal(250), Decimal(500))
+MIX_LAYERS = ("conventional", "wind", "pv")
+
+
+def nice_ceiling(value: Decimal, steps: tuple[Decimal, ...]) -> tuple[Decimal, Decimal]:
+    raw = max(value, Decimal(1)) / TARGET_TICKS
+    step = next((candidate for candidate in steps if candidate >= raw), steps[-1])
+    ceiling = (max(value, step) / step).quantize(Decimal(1), rounding=ROUND_CEILING) * step
+    return ceiling, step
+
+
+def polyline(points: Sequence[tuple[float, float]]) -> str:
+    return " ".join(f"{x:.2f},{y:.2f}" for x, y in points)
+
+
+@dataclass(frozen=True, slots=True)
+class MixLayer:
+    key: str
+    points: str
+
+
+@dataclass(frozen=True, slots=True)
+class MixChart:
+    width: int
+    height: int
+    left: float
+    right: float
+    top: float
+    bottom: float
+    layers: list[MixLayer]
+    carbon_segments: list[str]
+    y_ticks: list[Tick]
+    carbon_ticks: list[Tick]
+    x_ticks: list[Tick]
+    now_x: float | None
+    span_start: datetime
+    span_end: datetime
+    y_max: Decimal
+    carbon_max: Decimal
+
+    @property
+    def plot_height(self) -> float:
+        return round(self.bottom - self.top, 2)
+
+    @property
+    def label_x(self) -> float:
+        return self.left - 8
+
+    @property
+    def right_label_x(self) -> float:
+        return self.right + 8
+
+    @property
+    def x_label_y(self) -> float:
+        return self.bottom + 18
+
+    @property
+    def span_start_epoch(self) -> int:
+        return int(self.span_start.timestamp())
+
+    @property
+    def span_end_epoch(self) -> int:
+        return int(self.span_end.timestamp())
+
+
+def build_mix_chart(
+    points: Sequence[GenerationPoint],
+    *,
+    now: datetime | None,
+    span: tuple[datetime, datetime] | None = None,
+) -> MixChart:
+    left, right = float(MARGIN_LEFT), float(CHART_WIDTH - MIX_RIGHT_MARGIN)
+    top, bottom = float(MARGIN_TOP), float(MIX_HEIGHT - MARGIN_BOTTOM)
+    span_start, span_end = span or day_bounds_utc(points[0].business_date)
+    span_seconds = (span_end - span_start).total_seconds()
+
+    def x_of(moment: datetime) -> float:
+        return left + (moment - span_start).total_seconds() / span_seconds * (right - left)
+
+    values = [
+        (
+            point.conventional_mw or Decimal(0),
+            point.wind_mw or Decimal(0),
+            point.pv_mw or Decimal(0),
+        )
+        for point in points
+    ]
+    y_max, step = nice_ceiling(max(sum(triple, Decimal(0)) for triple in values), MW_STEPS)
+    carbon_values = [point.carbon_g_kwh for point in points if point.carbon_g_kwh is not None]
+    carbon_max, carbon_step = nice_ceiling(max(carbon_values, default=Decimal(1)), CARBON_STEPS)
+
+    def y_of(value: Decimal) -> float:
+        return bottom - float(value) / float(y_max) * (bottom - top)
+
+    def carbon_y(value: Decimal) -> float:
+        return bottom - float(value) / float(carbon_max) * (bottom - top)
+
+    xs = [x_of(point.dtime_utc - INTERVAL) for point in points]
+    xs.append(x_of(points[-1].dtime_utc))
+    cumulative: list[list[Decimal]] = [[Decimal(0)] * len(points)]
+    for layer_index in range(len(MIX_LAYERS)):
+        previous = cumulative[-1]
+        cumulative.append([previous[i] + values[i][layer_index] for i in range(len(points))])
+    layers: list[MixLayer] = []
+    for layer_index, key in enumerate(MIX_LAYERS):
+        lower = cumulative[layer_index]
+        upper = cumulative[layer_index + 1]
+        upper_points = [(xs[i], y_of(upper[i])) for i in range(len(points))]
+        upper_points.append((xs[-1], y_of(upper[-1])))
+        lower_points = [(xs[i], y_of(lower[i])) for i in range(len(points))]
+        lower_points.append((xs[-1], y_of(lower[-1])))
+        layers.append(MixLayer(key=key, points=polyline(upper_points + lower_points[::-1])))
+    carbon_segments: list[str] = []
+    current: list[tuple[float, float]] = []
+    for index, point in enumerate(points):
+        if point.carbon_g_kwh is None:
+            if current:
+                carbon_segments.append(polyline(current))
+                current = []
+            continue
+        midpoint = (xs[index] + xs[index + 1]) / 2
+        current.append((midpoint, carbon_y(point.carbon_g_kwh)))
+    if current:
+        carbon_segments.append(polyline(current))
+    y_ticks = []
+    tick = Decimal(0)
+    while tick <= y_max:
+        y_ticks.append(Tick(round(y_of(tick), 2), f"{tick:.0f}"))
+        tick += step
+    carbon_ticks = []
+    tick = Decimal(0)
+    while tick <= carbon_max:
+        carbon_ticks.append(Tick(round(carbon_y(tick), 2), f"{tick:.0f}"))
+        tick += carbon_step
+    now_x = round(x_of(now), 2) if now is not None and span_start <= now <= span_end else None
+    return MixChart(
+        width=CHART_WIDTH,
+        height=MIX_HEIGHT,
+        left=left,
+        right=right,
+        top=top,
+        bottom=bottom,
+        layers=layers,
+        carbon_segments=carbon_segments,
+        y_ticks=y_ticks,
+        carbon_ticks=carbon_ticks,
+        x_ticks=build_x_ticks(span_start, span_end, x_of, False),
+        now_x=now_x,
+        span_start=span_start,
+        span_end=span_end,
+        y_max=y_max,
+        carbon_max=carbon_max,
+    )
+
+
+BARS_HEIGHT = 200
+BARS_STEPS = (
+    Decimal(1),
+    Decimal(2),
+    Decimal(5),
+    Decimal(10),
+    Decimal(20),
+    Decimal(25),
+    Decimal(50),
+    Decimal(100),
+    Decimal(200),
+    Decimal(250),
+    Decimal(500),
+    Decimal(1000),
+    Decimal(2000),
+    Decimal(5000),
+)
+
+
+@dataclass(frozen=True, slots=True)
+class SimpleBar:
+    x: float
+    y: float
+    width: float
+    height: float
+    label: str
+    value_text: str
+    css_class: str
+    negative: bool
+
+    @property
+    def center_x(self) -> float:
+        return round(self.x + self.width / 2, 2)
+
+    @property
+    def value_y(self) -> float:
+        if self.negative:
+            return round(self.y + self.height + 12, 2)
+        return round(self.y - 5, 2)
+
+
+@dataclass(frozen=True, slots=True)
+class BarsChart:
+    width: int
+    height: int
+    left: float
+    right: float
+    top: float
+    bottom: float
+    bars: list[SimpleBar]
+    y_ticks: list[Tick]
+    zero_y: float
+
+    @property
+    def label_x(self) -> float:
+        return self.left - 8
+
+    @property
+    def x_label_y(self) -> float:
+        return self.bottom + 18
+
+
+def build_bars(
+    items: Sequence[tuple[str, Decimal, str, str]],
+    *,
+    height: int = BARS_HEIGHT,
+    y_max: Decimal | None = None,
+) -> BarsChart:
+    left, right = float(MARGIN_LEFT), float(CHART_WIDTH - MARGIN_RIGHT)
+    top, bottom = float(MARGIN_TOP), float(height - MARGIN_BOTTOM)
+    values = [value for _label, value, _text, _css in items] or [Decimal(0)]
+    highest = max(max(values), Decimal(0))
+    lowest = min(min(values), Decimal(0))
+    span_value = max(highest - lowest, Decimal(1))
+    ceiling, step = nice_ceiling(highest if y_max is None else y_max, BARS_STEPS)
+    if y_max is not None:
+        ceiling = y_max
+        _unused, step = nice_ceiling(y_max, BARS_STEPS)
+    floor = Decimal(0)
+    if lowest < 0:
+        floor = -((-lowest / step).quantize(Decimal(1), rounding=ROUND_CEILING) * step)
+    span_value = max(ceiling - floor, Decimal(1))
+
+    def y_of(value: Decimal) -> float:
+        return bottom - float(value - floor) / float(span_value) * (bottom - top)
+
+    zero_y = y_of(Decimal(0))
+    slot = (right - left) / max(len(items), 1)
+    bar_width = slot * 0.72
+    bars = [
+        SimpleBar(
+            x=round(left + index * slot + (slot - bar_width) / 2, 2),
+            y=round(min(y_of(value), zero_y), 2),
+            width=round(bar_width, 2),
+            height=round(abs(zero_y - y_of(value)), 2),
+            label=label,
+            value_text=text,
+            css_class=css,
+            negative=value < 0,
+        )
+        for index, (label, value, text, css) in enumerate(items)
+    ]
+    y_ticks = []
+    tick = floor
+    while tick <= ceiling:
+        y_ticks.append(Tick(round(y_of(tick), 2), f"{tick:.0f}"))
+        tick += step
+    return BarsChart(
+        width=CHART_WIDTH,
+        height=height,
+        left=left,
+        right=right,
+        top=top,
+        bottom=bottom,
+        bars=bars,
+        y_ticks=y_ticks,
+        zero_y=round(zero_y, 2),
+    )
 
 
 @dataclass(frozen=True, slots=True)

@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% load i18n energy %}
+{% block title %}{% translate "Statistics" %} · Energy Clock{% endblock %}
+{% block content %}
+<div class="stats">
+  <div class="panel-head">
+    <nav class="daytabs" aria-label="{% translate 'Period' %}">
+      <a href="{% url 'web:stats' %}?period=all"{% if bundle.period_key == 'all' %} aria-current="page"{% endif %}>{% translate "Whole history" %}</a>
+      <a href="{% url 'web:stats' %}?period=12m"{% if bundle.period_key == '12m' %} aria-current="page"{% endif %}>{% translate "Last 12 months" %}</a>
+      <a href="{% url 'web:stats' %}?period=30d"{% if bundle.period_key == '30d' %} aria-current="page"{% endif %}>{% translate "Last 30 days" %}</a>
+    </nav>
+    <h1 class="panel-title">{% translate "Market statistics" %}{% if bundle.overview.first_day %} · {{ bundle.overview.first_day|date:"j E Y" }} – {{ bundle.overview.last_day|date:"j E Y" }}{% endif %}</h1>
+  </div>
+
+  {% if not bundle.overview.intervals %}
+    <div class="empty"><p class="empty-title">{% translate "No price data yet." %}</p></div>
+  {% else %}
+  <section>
+    <dl class="daystats">
+      <div><dt>{% translate "Intervals" %}</dt><dd class="num">{{ bundle.overview.intervals|money:0 }}</dd></div>
+      <div><dt>{% translate "Average price" %}</dt><dd class="num">{{ bundle.overview.avg_price|money }} <small>PLN/MWh</small></dd></div>
+      <div><dt>{% translate "Lowest price" %}</dt><dd class="num">{{ bundle.overview.min_price|money }} <small>{% if bundle.lowest %}{{ bundle.lowest.interval_start_utc|local_dt }}{% endif %}</small></dd></div>
+      <div><dt>{% translate "Highest price" %}</dt><dd class="num">{{ bundle.overview.max_price|money }} <small>{% if bundle.highest %}{{ bundle.highest.interval_start_utc|local_dt }}{% endif %}</small></dd></div>
+      <div><dt>{% translate "Negative price intervals" %}</dt><dd class="num">{{ bundle.overview.negative_intervals|money:0 }}</dd></div>
+      <div><dt>{% translate "Cheapest hour on average" %}</dt><dd class="num">{% if bundle.cheapest_hour %}{{ bundle.cheapest_hour.hour|stringformat:"02d" }}:00 <small>{{ bundle.cheapest_hour.avg_price|money }}</small>{% else %}–{% endif %}</dd></div>
+      <div><dt>{% translate "Most expensive hour on average" %}</dt><dd class="num">{% if bundle.priciest_hour %}{{ bundle.priciest_hour.hour|stringformat:"02d" }}:00 <small>{{ bundle.priciest_hour.avg_price|money }}</small>{% else %}–{% endif %}</dd></div>
+    </dl>
+  </section>
+
+  {% if hour_chart %}
+  <section>
+    <h2>{% translate "Average price by hour of day" %}</h2>
+    <p class="sub">{% translate "PLN/MWh, local time, colour on the same price scale as the clock" %}</p>
+    {% include "web/partials/bars.html" with chart=hour_chart unit="PLN/MWh" show_values=True aria_label=_("Average price by hour of day") label_step=1 %}
+    <div class="legend">
+      {% for entry in legend %}<span class="legend-item"><i class="swatch b{{ entry.bucket }}"></i><span class="num">{% if entry.lower is None %}&lt; {{ entry.upper|money:0 }}{% elif entry.upper is None %}≥ {{ entry.lower|money:0 }}{% else %}{{ entry.lower|money:0 }}–{{ entry.upper|money:0 }}{% endif %}</span></span>{% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if weekday_chart %}
+  <section>
+    <h2>{% translate "Average price by day of week" %}</h2>
+    <p class="sub">{% translate "PLN/MWh" %}</p>
+    {% include "web/partials/bars.html" with chart=weekday_chart unit="PLN/MWh" show_values=True aria_label=_("Average price by day of week") label_step=1 compact=True %}
+  </section>
+  {% endif %}
+
+  {% if res_chart %}
+  <section>
+    <h2>{% translate "Renewable share of planned generation by month" %}</h2>
+    <p class="sub">{% translate "Solar and wind as a percentage of solar, wind and conventional units in the PSE plan" %}</p>
+    {% include "web/partials/bars.html" with chart=res_chart unit="%" show_values=True aria_label=_("Renewable share by month") label_step=1 %}
+  </section>
+  {% endif %}
+
+  {% if negative_chart %}
+  <section>
+    <h2>{% translate "Intervals with a negative price by month" %}</h2>
+    <p class="sub">{% translate "15-minute intervals where the day-ahead price fell below zero" %}</p>
+    {% include "web/partials/bars.html" with chart=negative_chart unit="" show_values=True aria_label=_("Negative price intervals by month") label_step=1 %}
+  </section>
+  {% endif %}
+
+  <p class="disclaimer">{% translate "Aggregates are computed by the database over all stored intervals; prices are wholesale day-ahead market prices from PSE." %}</p>
+  {% endif %}
+</div>
+{% endblock %}

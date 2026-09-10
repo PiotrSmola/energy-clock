@@ -125,6 +125,14 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": REDIS_URL,
+        "KEY_PREFIX": "energy-clock",
+    }
+}
+
 CELERY_BROKER_URL = REDIS_URL
 
 CELERY_RESULT_BACKEND = "django-db"
@@ -156,6 +164,10 @@ CELERY_BEAT_SCHEDULE = {
         "task": "apps.market.tasks.fill_gaps",
         "schedule": crontab(hour=3, minute=30),
         "kwargs": {"days": 7},
+    },
+    "warm-statistics": {
+        "task": "apps.web.tasks.warm_statistics",
+        "schedule": crontab(hour="4,15", minute=0),
     },
 }
 

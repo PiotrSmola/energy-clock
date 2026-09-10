@@ -1,0 +1,70 @@
+{% load i18n energy %}
+<div class="panel-progress" aria-hidden="true"></div>
+{% if not comparison.has_data %}
+  <div class="result result--empty">
+    <p class="empty-title">{% translate "No price data for this horizon." %}</p>
+    {% include "web/partials/freshness.html" with freshness=freshness published_at=None %}
+  </div>
+{% elif not comparison.best_cheap %}
+  <div class="result result--empty">
+    <p class="empty-title">{% translate "The cycle does not fit in the available data." %}</p>
+    <p class="muted">{% translate "Try a shorter cycle or come back after the next publication." %}</p>
+  </div>
+{% else %}
+  <article class="result">
+    <p class="result-kicker">{{ label }} · {{ duration|duration }} · <span class="num">{{ power }} kW</span></p>
+    {% if not comparison.has_carbon or not comparison.best_clean %}
+      <p class="empty-title">{% translate "No generation plan for this horizon yet, so the clean ranking is empty." %}</p>
+    {% elif comparison.same_window %}
+      <p class="verdict">{% blocktranslate trimmed with start=comparison.best_cheap.start_utc|local_hm end=comparison.best_cheap.end_utc|local_hm %}
+        Today cheap and clean coincide: {{ start }}–{{ end }} is both the cheapest and the cleanest window.
+      {% endblocktranslate %}</p>
+    {% else %}
+      <p class="verdict">{% blocktranslate trimmed with extra=comparison.extra_cost_pln|money percent=comparison.extra_cost_percent saved=comparison.carbon_saved_g|grams_to_kg saved_percent=comparison.carbon_saved_percent %}
+        The cleaner window costs <strong>{{ extra }} PLN</strong> more (+{{ percent }} %) and avoids <strong>≈ {{ saved }} kg CO₂</strong> ({{ saved_percent }} % less).
+      {% endblocktranslate %}</p>
+    {% endif %}
+
+    <div class="duel">
+      <div class="duel-col">
+        <h2>{% translate "Cheapest" %}</h2>
+        <p class="duel-main"><span class="value num">{{ comparison.best_cheap.start_utc|local_hm }}</span> <span class="result-when num">{{ comparison.best_cheap.start_utc|relative_day:now }}, {% translate "until" %} {{ comparison.best_cheap.end_utc|local_hm }}</span></p>
+        <dl class="result-grid result-grid--tight">
+          <div><dt>{% translate "Cost" %}</dt><dd class="num">{{ comparison.best_cheap.cost_pln|money }} <small>PLN</small></dd></div>
+          <div><dt>{% translate "Carbon footprint" %}</dt><dd class="num">{% if comparison.best_cheap.carbon_g is not None %}≈ {{ comparison.best_cheap.carbon_g|grams_to_kg }} <small>kg CO₂</small>{% else %}–{% endif %}</dd></div>
+        </dl>
+        <ol class="rank">
+          {% for window in comparison.cheapest %}
+          <li><span class="num">{{ window.start_utc|local_hm }}–{{ window.end_utc|local_hm }} <small>{{ window.start_utc|relative_day:now }}</small></span><span class="num">{{ window.cost_pln|money }} PLN</span><span class="num muted">{% if window.carbon_g is not None %}≈ {{ window.carbon_g|grams_to_kg }} kg{% else %}–{% endif %}</span></li>
+          {% endfor %}
+        </ol>
+      </div>
+      <div class="duel-col">
+        <h2>{% translate "Cleanest" %}</h2>
+        {% if comparison.best_clean %}
+        <p class="duel-main"><span class="value num">{{ comparison.best_clean.start_utc|local_hm }}</span> <span class="result-when num">{{ comparison.best_clean.start_utc|relative_day:now }}, {% translate "until" %} {{ comparison.best_clean.end_utc|local_hm }}</span></p>
+        <dl class="result-grid result-grid--tight">
+          <div><dt>{% translate "Cost" %}</dt><dd class="num">{{ comparison.best_clean.cost_pln|money }} <small>PLN</small></dd></div>
+          <div><dt>{% translate "Carbon footprint" %}</dt><dd class="num">≈ {{ comparison.best_clean.carbon_g|grams_to_kg }} <small>kg CO₂</small></dd></div>
+        </dl>
+        <ol class="rank">
+          {% for window in comparison.cleanest %}
+          <li><span class="num">{{ window.start_utc|local_hm }}–{{ window.end_utc|local_hm }} <small>{{ window.start_utc|relative_day:now }}</small></span><span class="num">{{ window.cost_pln|money }} PLN</span><span class="num muted">≈ {{ window.carbon_g|grams_to_kg }} kg</span></li>
+          {% endfor %}
+        </ol>
+        {% else %}
+        <p class="muted">{% translate "No carbon data in this horizon." %}</p>
+        {% endif %}
+      </div>
+    </div>
+
+    {% if chart %}
+      {% include "web/partials/chart.html" with chart=chart compact=True %}
+      <div class="legend">
+        <span class="legend-item"><i class="swatch swatch--win"></i>{% translate "cheapest window" %}</span>
+        <span class="legend-item"><i class="swatch swatch--clean"></i>{% translate "cleanest window" %}</span>
+      </div>
+    {% endif %}
+    <p class="disclaimer">{% translate "Costs at wholesale day-ahead prices with constant power draw. Carbon footprint is approximate, from the planned generation mix." %}</p>
+  </article>
+{% endif %}

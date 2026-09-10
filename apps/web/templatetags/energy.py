@@ -82,6 +82,13 @@ def bucket_class(bucket: int | None) -> str:
     return "" if bucket is None else f"b{bucket}"
 
 
+@register.filter
+def div_by(value: Decimal | int | None, divisor: Decimal | int | None) -> Decimal | None:
+    if value is None or divisor in (None, 0):
+        return None
+    return Decimal(value) / Decimal(divisor)
+
+
 @register.simple_tag
 def attr_if(condition: object, attribute: str) -> str:
     return attribute if condition else ""

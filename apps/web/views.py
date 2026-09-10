@@ -21,11 +21,32 @@ from apps.market.queries import (
     publication_is_late,
     res_share_percent,
 )
-from apps.market.timeutils import INTERVAL, to_local
-from apps.planner.forms import PlannerForm
+from apps.market.timeutils import INTERVAL, day_bounds_utc, to_local
+from apps.planner.forms import DEFAULT_HOURLY_SHAPE, HOURS, PlannerForm, TariffForm
 from apps.planner.models import Appliance
-from apps.planner.services import DaySummary, Plan, build_plan, reference_plan, summarize_day
-from apps.web.charts import ChartModel, build_chart, build_ring
+from apps.planner.optimizer import PriceSlot
+from apps.planner.services import (
+    REFERENCE_DURATION_MINUTES,
+    REFERENCE_POWER_KW,
+    DaySummary,
+    Plan,
+    build_plan,
+    reference_plan,
+    reference_request,
+    summarize_day,
+)
+from apps.planner.tariff import TariffComparison, simulate_tariff
+from apps.web.analysis import (
+    PERIODS,
+    compare_windows,
+    hour_bars,
+    negative_bars,
+    res_bars,
+    stats_bundle,
+    summarize_mix,
+    weekday_bars,
+)
+from apps.web.charts import BarsChart, ChartModel, build_bars, build_chart, build_ring
 
 DAY_KEYS = ("today", "tomorrow")
 RESULT_HORIZON = timedelta(hours=48)
@@ -226,3 +247,193 @@ def planner(request: HttpRequest) -> HttpResponse:
 
 def planner_result(request: HttpRequest) -> HttpResponse:
     return render(request, "web/partials/plan_result.html", planner_context(request))
+
+
+def parse_day(raw: str | None, default: date) -> date:
+    if not raw:
+        return default
+    try:
+        return date.fromisoformat(raw)
+    except ValueError:
+        return default
+
+
+def mix(request: HttpRequest) -> HttpResponse:
+    now = timezone.now()
+    today = to_local(now).date()
+    day = parse_day(request.GET.get("day"), today)
+    summary = summarize_mix(day, now)
+    context = {
+        "nav": "mix",
+        "summary": summary,
+        "now": now,
+        "today": today,
+        "previous_day": day - timedelta(days=1),
+        "next_day": day + timedelta(days=1),
+        "freshness": freshness(now),
+    }
+    template = "web/partials/mix_panel.html" if is_htmx(request) else "web/mix.html"
+    return render(request, template, context)
+
+
+def compare_context(request: HttpRequest) -> dict[str, Any]:
+    now = timezone.now()
+    today = to_local(now).date()
+    form = PlannerForm(request.GET or None)
+    duration = REFERENCE_DURATION_MINUTES
+    power = REFERENCE_POWER_KW
+    label = str(reference_request().label)
+    if request.GET and form.is_valid():
+        plan_request = form.to_request(now)
+        duration, power, label = (
+            plan_request.duration_minutes,
+            plan_request.power_kw,
+            plan_request.label,
+        )
+    raw_day = request.GET.get("day")
+    day = parse_day(raw_day, today) if raw_day else None
+    comparison = compare_windows(duration, power, now, day=day)
+    thresholds = price_thresholds(now)
+    chart = None
+    if comparison.has_data:
+        span = (
+            comparison.horizon_start if day is None else day_bounds_utc(day)[0],
+            comparison.horizon_end or comparison.horizon_start,
+        )
+        points = list(
+            PricePoint.objects.filter(dtime_utc__gt=span[0], dtime_utc__lte=span[1]).order_by(
+                "dtime_utc"
+            )
+        )
+        generation = {
+            point.dtime_utc: point
+            for point in GenerationPoint.objects.filter(
+                dtime_utc__gt=span[0], dtime_utc__lte=span[1]
+            )
+        }
+        if points:
+            chart = build_chart(
+                points,
+                generation,
+                thresholds=thresholds,
+                now=now,
+                window=comparison.best_cheap,
+                secondary_window=comparison.best_clean,
+                span=(points[0].dtime_utc - INTERVAL, points[-1].dtime_utc),
+                compact=True,
+            )
+    return {
+        "nav": "compare",
+        "form": form,
+        "comparison": comparison,
+        "chart": chart,
+        "now": now,
+        "day": day,
+        "duration": duration,
+        "power": power,
+        "label": label,
+        "appliances": list(Appliance.objects.filter(user=None)),
+        "presets": appliance_presets(),
+        "freshness": freshness(now),
+    }
+
+
+def compare(request: HttpRequest) -> HttpResponse:
+    return render(request, "web/compare.html", compare_context(request))
+
+
+def compare_result(request: HttpRequest) -> HttpResponse:
+    return render(request, "web/partials/compare_result.html", compare_context(request))
+
+
+def tariff_context(request: HttpRequest) -> dict[str, Any]:
+    now = timezone.now()
+    today = to_local(now).date()
+    form = TariffForm(request.GET or None)
+    comparison: TariffComparison | None = None
+    chart = None
+    period: tuple[date, date] | None = None
+    if not request.GET:
+        form = TariffForm(
+            {
+                name: field.initial
+                for name, field in form.fields.items()
+                if field.initial is not None
+            }
+        )
+    if form.is_valid():
+        period = form.period(today)
+        comparison = simulate_tariff(
+            tariff_slots(*period),
+            monthly_kwh=Decimal(form.cleaned_data["monthly_kwh"]),
+            profile=form.to_profile(),
+            fixed_price_pln_kwh=Decimal(form.cleaned_data["fixed_price_pln_kwh"]),
+            start=period[0],
+            end=period[1],
+        )
+        chart = tariff_bars(comparison)
+    return {
+        "nav": "tariff",
+        "form": form,
+        "comparison": comparison,
+        "chart": chart,
+        "period": period,
+        "hourly_levels": form.hourly_levels()
+        if form.is_bound and form.is_valid()
+        else list(DEFAULT_HOURLY_SHAPE),
+        "hours": list(HOURS),
+        "now": now,
+        "freshness": freshness(now),
+    }
+
+
+def tariff_slots(start: date, end: date) -> list[PriceSlot]:
+    return [
+        PriceSlot(start_utc=dtime_utc - INTERVAL, price_pln_mwh=price)
+        for dtime_utc, price in PricePoint.objects.filter(business_date__range=(start, end))
+        .order_by("dtime_utc")
+        .values_list("dtime_utc", "price_pln_mwh")
+    ]
+
+
+def tariff_bars(comparison: TariffComparison) -> BarsChart | None:
+    if not comparison.months:
+        return None
+    return build_bars(
+        [
+            (
+                f"{month.first_day:%m.%y}",
+                month.difference_pln,
+                f"{month.difference_pln:+.0f}",
+                "b0" if month.difference_pln >= 0 else "b6",
+            )
+            for month in comparison.months
+        ]
+    )
+
+
+def tariff(request: HttpRequest) -> HttpResponse:
+    return render(request, "web/tariff.html", tariff_context(request))
+
+
+def tariff_result(request: HttpRequest) -> HttpResponse:
+    return render(request, "web/partials/tariff_result.html", tariff_context(request))
+
+
+def stats(request: HttpRequest) -> HttpResponse:
+    now = timezone.now()
+    today = to_local(now).date()
+    bundle = stats_bundle(request.GET.get("period", "all"), today)
+    thresholds = price_thresholds(now)
+    context = {
+        "nav": "stats",
+        "bundle": bundle,
+        "now": now,
+        "hour_chart": hour_bars(bundle.hours, thresholds) if bundle.hours else None,
+        "weekday_chart": weekday_bars(bundle.weekdays, thresholds) if bundle.weekdays else None,
+        "res_chart": res_bars(bundle.res_months) if bundle.res_months else None,
+        "negative_chart": negative_bars(bundle.negative_months) if bundle.negative_months else None,
+        "periods": list(PERIODS),
+        "legend": legend_entries(thresholds),
+    }
+    return render(request, "web/stats.html", context)
