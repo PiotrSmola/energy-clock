@@ -1352,7 +1352,10 @@ tr.in-window td {
   cursor: pointer;
 }
 
-.radios input {
+.radios input,
+.field .radios input[type="radio"] {
+  width: auto;
+  margin: 0;
   accent-color: var(--ink);
 }
 

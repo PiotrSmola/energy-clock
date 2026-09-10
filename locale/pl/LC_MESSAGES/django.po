@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Energy Clock\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-09 14:24+0200\n"
-"PO-Revision-Date: 2026-09-09 14:20+0200\n"
+"POT-Creation-Date: 2026-09-10 08:34+0200\n"
+"PO-Revision-Date: 2026-09-10 08:40+0200\n"
 "Last-Translator: Energy Clock\n"
 "Language-Team: pl\n"
 "Language: pl\n"
@@ -85,8 +85,65 @@ msgstr "Podaj długość cyklu od %(low)d do %(high)d minut."
 msgid "Enter a power draw between %(low)s and %(high)s kW."
 msgstr "Podaj pobór mocy od %(low)s do %(high)s kW."
 
+msgid "Monthly consumption (kWh)"
+msgstr "Zużycie miesięczne (kWh)"
+
+msgid "Your fixed energy price (PLN/kWh)"
+msgstr "Twoja stała cena energii (PLN/kWh)"
+
+msgid "Even, all day"
+msgstr "Równomierny, cała doba"
+
+msgid "Daytime, 06:00 to 22:00"
+msgstr "Dzienny, 06:00 do 22:00"
+
+msgid "Night, 22:00 to 06:00"
+msgstr "Nocny, 22:00 do 06:00"
+
+msgid "Custom, hour by hour"
+msgstr "Własny, godzina po godzinie"
+
+msgid "Daily profile"
+msgstr "Profil dobowy"
+
+msgid "From"
+msgstr "Od"
+
+msgid "To"
+msgstr "Do"
+
+msgid "The end date must not be before the start date."
+msgstr "Data końcowa nie może być wcześniejsza niż początkowa."
+
+msgid "Set at least one hour above zero."
+msgstr "Ustaw przynajmniej jedną godzinę powyżej zera."
+
 msgid "2 kW appliance"
 msgstr "Urządzenie 2 kW"
+
+msgid "Custom"
+msgstr "Własny"
+
+msgid "Mon"
+msgstr "pon"
+
+msgid "Tue"
+msgstr "wt"
+
+msgid "Wed"
+msgstr "śr"
+
+msgid "Thu"
+msgstr "czw"
+
+msgid "Fri"
+msgstr "pt"
+
+msgid "Sat"
+msgstr "sob"
+
+msgid "Sun"
+msgstr "niedz"
 
 #, python-format
 msgid "%(hours)d h %(minutes)d min"
@@ -125,6 +182,18 @@ msgstr "Zegar cen"
 msgid "Planner"
 msgstr "Planer"
 
+msgid "Cheap vs. clean"
+msgstr "Tanio kontra czysto"
+
+msgid "Generation mix"
+msgstr "Miks generacji"
+
+msgid "Tariff"
+msgstr "Taryfa"
+
+msgid "Statistics"
+msgstr "Statystyki"
+
 msgid "Language"
 msgstr "Język"
 
@@ -136,6 +205,41 @@ msgstr ""
 "Dane: <a href=\"https://api.raporty.pse.pl/\" rel=\"noopener\">API raportów "
 "PSE</a>, ceny rynku dnia następnego w interwałach 15-minutowych od 14 "
 "czerwca 2024. Energy Clock to niezależny projekt, niepowiązany z PSE."
+
+msgid ""
+"The cheapest hours are not always the cleanest. Compare both rankings for "
+"the same appliance and see what the cleaner choice costs."
+msgstr ""
+"Najtańsze godziny nie zawsze są najczystsze. Porównaj oba rankingi dla tego "
+"samego urządzenia i zobacz, ile kosztuje czystszy wybór."
+
+msgid "Cycle length"
+msgstr "Długość cyklu"
+
+msgid "Cycle length slider"
+msgstr "Suwak długości cyklu"
+
+msgid "minutes"
+msgstr "minuty"
+
+msgid "Power draw"
+msgstr "Pobór mocy"
+
+msgid "Power slider"
+msgstr "Suwak mocy"
+
+msgid "Compare windows"
+msgstr "Porównaj okna"
+
+#, python-format
+msgid "Showing the whole day of %(when)s."
+msgstr "Pokazujemy całą dobę %(when)s."
+
+msgid "Back to the coming hours"
+msgstr "Wróć do najbliższych godzin"
+
+msgid "Horizon: from now until the end of published prices."
+msgstr "Horyzont: od teraz do końca opublikowanych cen."
 
 msgid "Key figures"
 msgstr "Najważniejsze liczby"
@@ -184,6 +288,66 @@ msgstr "Wykres słupkowy cen w interwałach 15-minutowych"
 
 msgid "now"
 msgstr "teraz"
+
+msgid "No price data for this horizon."
+msgstr "Brak danych o cenach dla tego horyzontu."
+
+msgid "The cycle does not fit in the available data."
+msgstr "Cykl nie mieści się w dostępnych danych."
+
+msgid "Try a shorter cycle or come back after the next publication."
+msgstr "Spróbuj krótszego cyklu albo wróć po następnej publikacji."
+
+msgid "No generation plan for this horizon yet, so the clean ranking is empty."
+msgstr ""
+"Nie ma jeszcze planu generacji dla tego horyzontu, więc ranking czystości "
+"jest pusty."
+
+#, python-format
+msgid ""
+"Today cheap and clean coincide: %(start)s–%(end)s is both the cheapest and "
+"the cleanest window."
+msgstr ""
+"Dziś tanio i czysto się pokrywają: %(start)s–%(end)s to zarazem najtańsze i "
+"najczystsze okno."
+
+#, python-format
+msgid ""
+"The cleaner window costs <strong>%(extra)s PLN</strong> more (+%(percent)s "
+"%%) and avoids <strong>≈ %(saved)s kg CO₂</strong> (%(saved_percent)s %% "
+"less)."
+msgstr ""
+"Czystsze okno kosztuje o <strong>%(extra)s PLN</strong> więcej (+%(percent)s "
+"%%) i oszczędza <strong>≈ %(saved)s kg CO₂</strong> (o %(saved_percent)s %% "
+"mniej)."
+
+msgid "Cheapest"
+msgstr "Najtaniej"
+
+msgid "Cost"
+msgstr "Koszt"
+
+msgid "Carbon footprint"
+msgstr "Ślad węglowy"
+
+msgid "Cleanest"
+msgstr "Najczyściej"
+
+msgid "No carbon data in this horizon."
+msgstr "Brak danych o emisjach w tym horyzoncie."
+
+msgid "cheapest window"
+msgstr "najtańsze okno"
+
+msgid "cleanest window"
+msgstr "najczystsze okno"
+
+msgid ""
+"Costs at wholesale day-ahead prices with constant power draw. Carbon "
+"footprint is approximate, from the planned generation mix."
+msgstr ""
+"Koszty po hurtowych cenach rynku dnia następnego przy stałym poborze mocy. "
+"Ślad węglowy jest przybliżony, z planowanego miksu generacji."
 
 msgid "Day"
 msgstr "Dzień"
@@ -284,6 +448,83 @@ msgid "Data may be stale: the last successful update is more than a day old."
 msgstr "Dane mogą być nieaktualne: ostatnia udana aktualizacja ma ponad dobę."
 
 msgid ""
+"Stacked area chart of planned generation by source with carbon intensity line"
+msgstr ""
+"Wykres warstwowy planowanej generacji według źródeł z linią emisyjności"
+
+msgid "Solar PV"
+msgstr "Fotowoltaika"
+
+msgid "Wind"
+msgstr "Wiatr"
+
+msgid "Conventional"
+msgstr "Konwencjonalne"
+
+msgid "Previous day"
+msgstr "Poprzedni dzień"
+
+msgid "Show"
+msgstr "Pokaż"
+
+msgid "Next day"
+msgstr "Następny dzień"
+
+msgid "RES share, day average"
+msgstr "Udział OZE, średnia dobowa"
+
+msgid "Cleanest interval"
+msgstr "Najczystszy interwał"
+
+msgid "Dirtiest interval"
+msgstr "Najbrudniejszy interwał"
+
+msgid "Solar peak"
+msgstr "Szczyt fotowoltaiki"
+
+msgid "Wind peak"
+msgstr "Szczyt wiatru"
+
+msgid "Demand peak"
+msgstr "Szczyt zapotrzebowania"
+
+msgid "Legend"
+msgstr "Legenda"
+
+msgid "Conventional units"
+msgstr "Jednostki konwencjonalne"
+
+msgid "Carbon intensity, right axis"
+msgstr "Emisyjność, prawa oś"
+
+msgid "PSE generation plan, MW per 15-minute interval"
+msgstr "Plan generacji PSE, MW w interwałach 15-minutowych"
+
+msgid ""
+"Carbon intensity is approximate: it is derived from the planned generation "
+"mix with 0 g/kWh for solar and wind and 750 g/kWh for conventional units, "
+"ignoring imports and grid losses. The plan is published by PSE and revised "
+"during the day."
+msgstr ""
+"Emisyjność jest przybliżona: wynika z planowanego miksu generacji przy 0 "
+"g/kWh dla fotowoltaiki i wiatru oraz 750 g/kWh dla jednostek "
+"konwencjonalnych, bez importu i strat sieciowych. Plan publikuje PSE i "
+"koryguje go w ciągu dnia."
+
+msgid "Demand"
+msgstr "Zapotrzebowanie"
+
+msgid "No generation plan for this day."
+msgstr "Brak planu generacji dla tego dnia."
+
+msgid ""
+"PSE publishes the plan for the next day in the afternoon; the hourly import "
+"will pick it up."
+msgstr ""
+"PSE publikuje plan na następny dzień po południu; cogodzinny import go "
+"pobierze."
+
+msgid ""
 "The result appears here: the cheapest start time, the cost, and how much you "
 "save compared with starting right now."
 msgstr ""
@@ -321,9 +562,6 @@ msgstr "Oszczędzasz"
 msgid "Average price in window"
 msgstr "Średnia cena w oknie"
 
-msgid "Carbon footprint"
-msgstr "Ślad węglowy"
-
 msgid "Most expensive option"
 msgstr "Najdroższa opcja"
 
@@ -353,6 +591,90 @@ msgid ""
 msgstr ""
 "Ceny znane są do %(at)s %(day)s; ceny na jutro pojawiają się około 14:00."
 
+msgid "No price data in this period."
+msgstr "Brak danych o cenach w tym okresie."
+
+msgid ""
+"Prices are available from 14 June 2024, when the Polish 15-minute market "
+"started."
+msgstr ""
+"Ceny są dostępne od 14 czerwca 2024, kiedy ruszył polski rynek 15-minutowy."
+
+msgid "per month"
+msgstr "miesięcznie"
+
+#, python-format
+msgid ""
+"A dynamic tariff would have been <strong>%(amount)s PLN cheaper</strong> "
+"over this period."
+msgstr ""
+"Taryfa dynamiczna byłaby w tym okresie <strong>tańsza o %(amount)s "
+"PLN</strong>."
+
+#, python-format
+msgid ""
+"Your fixed price would have been <strong>%(amount)s PLN cheaper</strong> "
+"over this period."
+msgstr ""
+"Twoja cena stała byłaby w tym okresie <strong>tańsza o %(amount)s "
+"PLN</strong>."
+
+msgid "Both tariffs would have cost the same over this period."
+msgstr "Obie taryfy kosztowałyby w tym okresie tyle samo."
+
+msgid "Dynamic tariff"
+msgstr "Taryfa dynamiczna"
+
+msgid "Fixed price"
+msgstr "Cena stała"
+
+msgid "Difference"
+msgstr "Różnica"
+
+msgid "Energy"
+msgstr "Energia"
+
+msgid "Average dynamic price"
+msgstr "Średnia cena dynamiczna"
+
+msgid "Monthly difference between fixed and dynamic cost"
+msgstr "Miesięczna różnica między kosztem stałym a dynamicznym"
+
+msgid "dynamic cheaper"
+msgstr "dynamiczna tańsza"
+
+msgid "fixed cheaper"
+msgstr "stała tańsza"
+
+msgid "PLN per month, fixed minus dynamic"
+msgstr "PLN miesięcznie, stała minus dynamiczna"
+
+msgid "Month"
+msgstr "Miesiąc"
+
+msgid "Days"
+msgstr "Dni"
+
+msgid "Dynamic"
+msgstr "Dynamiczna"
+
+msgid "Fixed"
+msgstr "Stała"
+
+msgid "Avg dynamic"
+msgstr "Śr. dynamiczna"
+
+msgid ""
+"Wholesale day-ahead prices only, before supplier margin, distribution fees, "
+"excise duty and VAT; compare them with the energy component of your fixed "
+"price, not the whole bill. Months with fewer days than the calendar are "
+"scaled proportionally. History starts in June 2024."
+msgstr ""
+"Tylko hurtowe ceny rynku dnia następnego, przed marżą sprzedawcy, opłatami "
+"dystrybucyjnymi, akcyzą i VAT; porównuj je ze składnikiem energii w swojej "
+"cenie stałej, nie z całą fakturą. Miesiące z mniejszą liczbą dni niż w "
+"kalendarzu są skalowane proporcjonalnie. Historia zaczyna się w czerwcu 2024."
+
 msgid "Appliance planner"
 msgstr "Planer urządzeń"
 
@@ -362,21 +684,6 @@ msgid ""
 msgstr ""
 "Wybierz urządzenie albo ustaw własny cykl. Najtańsza godzina startu jest "
 "liczona na serwerze z opublikowanych cen."
-
-msgid "Cycle length"
-msgstr "Długość cyklu"
-
-msgid "Cycle length slider"
-msgstr "Suwak długości cyklu"
-
-msgid "minutes"
-msgstr "minuty"
-
-msgid "Power draw"
-msgstr "Pobór mocy"
-
-msgid "Power slider"
-msgstr "Suwak mocy"
 
 msgid "optional, local time"
 msgstr "opcjonalnie, czas lokalny"
@@ -389,3 +696,115 @@ msgstr "po bieżącej cenie"
 
 msgid "Find the cheapest window"
 msgstr "Znajdź najtańsze okno"
+
+msgid "Period"
+msgstr "Okres"
+
+msgid "Whole history"
+msgstr "Cała historia"
+
+msgid "Last 12 months"
+msgstr "Ostatnie 12 miesięcy"
+
+msgid "Last 30 days"
+msgstr "Ostatnie 30 dni"
+
+msgid "Market statistics"
+msgstr "Statystyki rynku"
+
+msgid "No price data yet."
+msgstr "Nie ma jeszcze danych o cenach."
+
+msgid "Intervals"
+msgstr "Interwały"
+
+msgid "Average price"
+msgstr "Średnia cena"
+
+msgid "Lowest price"
+msgstr "Najniższa cena"
+
+msgid "Highest price"
+msgstr "Najwyższa cena"
+
+msgid "Negative price intervals"
+msgstr "Interwały z ceną ujemną"
+
+msgid "Cheapest hour on average"
+msgstr "Najtańsza godzina średnio"
+
+msgid "Most expensive hour on average"
+msgstr "Najdroższa godzina średnio"
+
+msgid "Average price by hour of day"
+msgstr "Średnia cena według godziny doby"
+
+msgid "PLN/MWh, local time, colour on the same price scale as the clock"
+msgstr "PLN/MWh, czas lokalny, kolor w tej samej skali cen co zegar"
+
+msgid "Average price by day of week"
+msgstr "Średnia cena według dnia tygodnia"
+
+msgid "PLN/MWh"
+msgstr "PLN/MWh"
+
+msgid "Renewable share of planned generation by month"
+msgstr "Udział OZE w planowanej generacji według miesięcy"
+
+msgid ""
+"Solar and wind as a percentage of solar, wind and conventional units in the "
+"PSE plan"
+msgstr ""
+"Fotowoltaika i wiatr jako procent sumy fotowoltaiki, wiatru i jednostek "
+"konwencjonalnych w planie PSE"
+
+msgid "Renewable share by month"
+msgstr "Udział OZE według miesięcy"
+
+msgid "Intervals with a negative price by month"
+msgstr "Interwały z ceną ujemną według miesięcy"
+
+msgid "15-minute intervals where the day-ahead price fell below zero"
+msgstr "Interwały 15-minutowe, w których cena rynku dnia następnego spadła poniżej zera"
+
+msgid "Negative price intervals by month"
+msgstr "Interwały z ceną ujemną według miesięcy"
+
+msgid ""
+"Aggregates are computed by the database over all stored intervals; prices "
+"are wholesale day-ahead market prices from PSE."
+msgstr ""
+"Agregaty liczy baza danych na wszystkich zapisanych interwałach; ceny to "
+"hurtowe ceny rynku dnia następnego z PSE."
+
+msgid "Tariff calculator"
+msgstr "Kalkulator taryf"
+
+msgid ""
+"Would a dynamic tariff have paid off for you? Enter your consumption and "
+"fixed price; the calculator replays the published prices month by month."
+msgstr ""
+"Czy taryfa dynamiczna by Ci się opłaciła? Podaj zużycie i cenę stałą; "
+"kalkulator odtwarza opublikowane ceny miesiąc po miesiącu."
+
+msgid "Monthly consumption"
+msgstr "Zużycie miesięczne"
+
+msgid "Your fixed energy price"
+msgstr "Twoja stała cena energii"
+
+msgid "PLN/kWh, energy component only"
+msgstr "PLN/kWh, tylko składnik energii"
+
+msgid ""
+"Relative weight per hour, 0 to 10. The shape is scaled to your monthly "
+"consumption."
+msgstr ""
+"Względna waga każdej godziny, od 0 do 10. Kształt jest skalowany do Twojego "
+"zużycia miesięcznego."
+
+msgid "Leave the dates empty for the last twelve months."
+msgstr "Zostaw daty puste, żeby policzyć ostatnie dwanaście miesięcy."
+
+msgid "Recalculate"
+msgstr "Przelicz"
