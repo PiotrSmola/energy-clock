@@ -17,6 +17,7 @@ class PricePoint(models.Model):
         ordering = ("dtime_utc",)
         indexes = (
             models.Index(fields=("business_date", "dtime_utc"), name="market_price_day_time_idx"),
+            models.Index(fields=("price_pln_mwh",), name="market_price_value_idx"),
         )
 
     def __str__(self) -> str:
