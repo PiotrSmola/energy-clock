@@ -1,10 +1,15 @@
 from django.urls import path
 
-from apps.web import accounts, views
+from apps.web import accounts, api, views, widget
 
 app_name = "web"
 
 urlpatterns = [
+    path("widget", widget.widget, name="widget"),
+    path("widget.svg", widget.widget_svg, name="widget_svg"),
+    path("export.csv", api.export_csv, name="export_csv"),
+    path("api/prices", api.prices, name="api_prices"),
+    path("api/windows", api.windows, name="api_windows"),
     path("account", accounts.profile, name="profile"),
     path("account/register", accounts.register, name="register"),
     path("account/login", accounts.SignInView.as_view(), name="login"),

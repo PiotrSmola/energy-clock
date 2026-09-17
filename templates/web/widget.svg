@@ -1,0 +1,21 @@
+{% load i18n energy l10n %}<svg xmlns="http://www.w3.org/2000/svg" width="360" height="132" viewBox="0 0 360 132" role="img" aria-label="Energy Clock: {% translate 'Price now' %} {% if data.now_point %}{{ data.now_point.price_pln_mwh|money }} PLN/MWh{% endif %}">
+  <rect x="0.5" y="0.5" width="359" height="131" rx="4" fill="#f4f4f1" stroke="#d8d8d3"/>
+  <rect x="0.5" y="0.5" width="4" height="131" fill="{{ data.color }}"/>
+  <g font-family="system-ui, -apple-system, 'Segoe UI', sans-serif" fill="#16171a">
+    <text x="20" y="26" font-size="13" font-weight="600">Energy Clock</text>
+    <text x="340" y="26" font-size="12" fill="#62656b" text-anchor="end">{{ data.now|local_hm }}</text>
+    <text x="20" y="48" font-size="10" fill="#62656b" letter-spacing="1">{% translate "Price now"|upper %}</text>
+    {% if data.now_point %}
+    <text x="20" y="82" font-size="34" font-weight="300" fill="{{ data.color }}">{{ data.now_point.price_pln_mwh|money }}</text>
+    <text x="{% if data.now_point.price_pln_mwh >= 1000 %}150{% elif data.now_point.price_pln_mwh >= 100 %}132{% else %}112{% endif %}" y="82" font-size="12" fill="#45474c">PLN/MWh</text>
+    {% else %}
+    <text x="20" y="82" font-size="34" font-weight="300" fill="#62656b">–</text>
+    {% endif %}
+    <text x="20" y="108" font-size="10" fill="#62656b" letter-spacing="1">{% translate "Cheapest 2 h window"|upper %}</text>
+    {% if data.cheapest %}
+    <text x="20" y="124" font-size="13" font-weight="500">{{ data.cheapest.start_utc|local_hm }}–{{ data.cheapest.end_utc|local_hm }} <tspan fill="#62656b" font-weight="400">{{ data.cheapest.start_utc|relative_day:data.now }}, {% translate "avg" %} {{ data.cheapest.avg_price_pln_mwh|money:0 }} PLN/MWh</tspan></text>
+    {% else %}
+    <text x="20" y="124" font-size="13" fill="#62656b">–</text>
+    {% endif %}
+  </g>
+</svg>

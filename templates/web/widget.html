@@ -1,0 +1,37 @@
+{% load static i18n energy %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" data-theme="{{ theme|default:'auto' }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Energy Clock</title>
+<link rel="stylesheet" href="{% static 'css/app.css' %}">
+</head>
+<body class="widget-body">
+<a class="widget" href="/" target="_top" rel="noopener">
+  <span class="widget-head">
+    <span class="widget-brand">Energy Clock</span>
+    <span class="widget-time num">{{ data.now|local_hm }}</span>
+  </span>
+  <span class="widget-row">
+    <span class="widget-label">{% translate "Price now" %}</span>
+    {% if data.now_point %}
+      <span class="widget-value num" style="color:{{ data.color }}">{{ data.now_point.price_pln_mwh|money }}</span>
+      <span class="widget-unit">PLN/MWh</span>
+    {% else %}
+      <span class="widget-value">–</span>
+    {% endif %}
+  </span>
+  <span class="widget-row">
+    <span class="widget-label">{% translate "Cheapest 2 h window" %}</span>
+    {% if data.cheapest %}
+      <span class="widget-value num">{{ data.cheapest.start_utc|local_hm }}–{{ data.cheapest.end_utc|local_hm }}</span>
+      <span class="widget-unit">{{ data.cheapest.start_utc|relative_day:data.now }}, {% translate "avg" %} {{ data.cheapest.avg_price_pln_mwh|money:0 }}</span>
+    {% else %}
+      <span class="widget-value">–</span>
+    {% endif %}
+  </span>
+  <span class="widget-foot">{% translate "Wholesale day-ahead prices, PSE" %}</span>
+</a>
+</body>
+</html>
