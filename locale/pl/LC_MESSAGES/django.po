@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Energy Clock\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-10 08:34+0200\n"
+"POT-Creation-Date: 2026-09-17 09:11+0200\n"
 "PO-Revision-Date: 2026-09-10 08:40+0200\n"
 "Last-Translator: Energy Clock\n"
 "Language-Team: pl\n"
@@ -40,6 +40,18 @@ msgstr "Błąd"
 
 msgid "Partial"
 msgstr "Częściowo"
+
+#, python-format
+msgid "Energy Clock: price below %(threshold)s PLN/MWh on %(day)s"
+msgstr "Energy Clock: cena poniżej %(threshold)s PLN/MWh, %(day)s"
+
+#, python-format
+msgid "Energy Clock: negative prices on %(day)s (%(count)d intervals)"
+msgstr "Energy Clock: ceny ujemne %(day)s (interwałów: %(count)d)"
+
+#, python-format
+msgid "Energy Clock: cheap and clean window %(start)s-%(end)s on %(day)s"
+msgstr "Energy Clock: tanie i czyste okno %(start)s-%(end)s, %(day)s"
 
 msgid "Washing machine"
 msgstr "Pralka"
@@ -118,11 +130,44 @@ msgstr "Data końcowa nie może być wcześniejsza niż początkowa."
 msgid "Set at least one hour above zero."
 msgstr "Ustaw przynajmniej jedną godzinę powyżej zera."
 
+msgid "Price below a threshold"
+msgstr "Cena poniżej progu"
+
+msgid "Negative price"
+msgstr "Cena ujemna"
+
+msgid "Cheap and clean window"
+msgstr "Tanie i czyste okno"
+
 msgid "2 kW appliance"
 msgstr "Urządzenie 2 kW"
 
 msgid "Custom"
 msgstr "Własny"
+
+msgid "Welcome! Your account is ready."
+msgstr "Witaj! Twoje konto jest gotowe."
+
+msgid "Household saved."
+msgstr "Gospodarstwo zapisane."
+
+msgid "Appliance added."
+msgstr "Urządzenie dodane."
+
+msgid "Alert added."
+msgstr "Alert dodany."
+
+msgid "Appliance removed."
+msgstr "Urządzenie usunięte."
+
+msgid "Alert enabled."
+msgstr "Alert włączony."
+
+msgid "Alert paused."
+msgstr "Alert wstrzymany."
+
+msgid "Alert removed."
+msgstr "Alert usunięty."
 
 msgid "Mon"
 msgstr "pon"
@@ -145,6 +190,60 @@ msgstr "sob"
 msgid "Sun"
 msgstr "niedz"
 
+msgid "Email"
+msgstr "E-mail"
+
+msgid "Password"
+msgstr "Hasło"
+
+msgid "Repeat password"
+msgstr "Powtórz hasło"
+
+msgid "An account with this email already exists."
+msgstr "Konto z tym adresem e-mail już istnieje."
+
+msgid "The two passwords do not match."
+msgstr "Hasła nie są identyczne."
+
+msgid "Contracted power (kW)"
+msgstr "Moc umowna (kW)"
+
+msgid "PV peak power (kWp)"
+msgstr "Moc szczytowa PV (kWp)"
+
+msgid "Battery storage (kWh)"
+msgstr "Magazyn energii (kWh)"
+
+msgid "Fixed energy price (PLN/kWh)"
+msgstr "Stała cena energii (PLN/kWh)"
+
+msgid "Prefer the cleanest window over the cheapest"
+msgstr "Wolę najczystsze okno zamiast najtańszego"
+
+msgid "Language of alert emails"
+msgstr "Język e-maili z alertami"
+
+msgid "Name"
+msgstr "Nazwa"
+
+msgid "Can be paused and resumed"
+msgstr "Można przerwać i wznowić"
+
+msgid "You already have an appliance with this name."
+msgstr "Masz już urządzenie o tej nazwie."
+
+msgid "Alert type"
+msgstr "Rodzaj alertu"
+
+msgid "Threshold"
+msgstr "Próg"
+
+msgid "Enter the price threshold in PLN/MWh."
+msgstr "Podaj próg ceny w PLN/MWh."
+
+msgid "Enter a renewable share between 1 and 100 percent."
+msgstr "Podaj udział OZE od 1 do 100 procent."
+
 #, python-format
 msgid "%(hours)d h %(minutes)d min"
 msgstr "%(hours)d h %(minutes)d min"
@@ -162,6 +261,126 @@ msgstr "dziś"
 
 msgid "tomorrow"
 msgstr "jutro"
+
+msgid "Sign in"
+msgstr "Zaloguj się"
+
+msgid "No account yet?"
+msgstr "Nie masz jeszcze konta?"
+
+msgid "Create one"
+msgstr "Załóż je"
+
+msgid ""
+"There is no password reset: this demo delivers mail only to a local inbox, "
+"so keep your password safe."
+msgstr "Nie ma resetu hasła: to demo dostarcza pocztę tylko do lokalnej skrzynki, więc pilnuj hasła."
+
+msgid "Account"
+msgstr "Konto"
+
+msgid "Your household"
+msgstr "Twoje gospodarstwo"
+
+msgid "Used to prefill the tariff calculator."
+msgstr "Używana do wstępnego wypełnienia kalkulatora taryf."
+
+msgid "Save household"
+msgstr "Zapisz gospodarstwo"
+
+msgid "Sign out"
+msgstr "Wyloguj się"
+
+msgid "Your appliances"
+msgstr "Twoje urządzenia"
+
+msgid ""
+"They appear in the planner and in the cheap vs. clean comparison next to the "
+"built-in templates."
+msgstr "Pojawiają się w planerze i w porównaniu „tanio kontra czysto” obok wbudowanych szablonów."
+
+msgid "Cycle"
+msgstr "Cykl"
+
+msgid "Power"
+msgstr "Moc"
+
+msgid "Interruptible"
+msgstr "Przerywalne"
+
+msgid "yes"
+msgstr "tak"
+
+msgid "no"
+msgstr "nie"
+
+msgid "Remove"
+msgstr "Usuń"
+
+msgid "Add appliance"
+msgstr "Dodaj urządzenie"
+
+msgid "Email alerts"
+msgstr "Alerty e-mail"
+
+msgid ""
+"Checked once a day right after PSE publishes tomorrow's prices. Each alert "
+"fires at most once per day."
+msgstr "Sprawdzane raz dziennie, zaraz po publikacji cen na jutro przez PSE. Każdy alert wysyła się najwyżej raz na dobę."
+
+msgid "Alert"
+msgstr "Alert"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Last sent"
+msgstr "Ostatnio wysłany"
+
+msgid "RES"
+msgstr "OZE"
+
+msgid "active"
+msgstr "aktywny"
+
+msgid "paused"
+msgstr "wstrzymany"
+
+msgid "Pause"
+msgstr "Wstrzymaj"
+
+msgid "Enable"
+msgstr "Włącz"
+
+msgid ""
+"PLN/MWh for the price alert, percent of renewables for the clean window; "
+"leave empty for negative prices."
+msgstr "PLN/MWh dla alertu cenowego, procent OZE dla czystego okna; zostaw puste dla cen ujemnych."
+
+msgid "Add alert"
+msgstr "Dodaj alert"
+
+msgid "Recently sent"
+msgstr "Ostatnio wysłane"
+
+msgid ""
+"In this demo every email lands in the local Mailpit inbox at <a "
+"href=\"http://127.0.0.1:8025\">127.0.0.1:8025</a>."
+msgstr "W tym demo każdy e-mail trafia do lokalnej skrzynki Mailpit pod adresem <a href=\"http://127.0.0.1:8025\">127.0.0.1:8025</a>."
+
+msgid "Create account"
+msgstr "Załóż konto"
+
+msgid ""
+"An account keeps your household profile, your own appliances and email "
+"alerts about cheap or clean hours."
+msgstr "Konto przechowuje profil gospodarstwa, własne urządzenia i alerty e-mail o tanich lub czystych godzinach."
+
+msgid "At least 8 characters, not only digits, not too similar to your email."
+msgstr "Co najmniej 8 znaków, nie same cyfry, niezbyt podobne do adresu e-mail."
+
+msgid "Already registered?"
+msgstr "Masz już konto?"
 
 msgid ""
 "When to switch on an appliance to pay less for electricity: Polish day-ahead "
@@ -205,6 +424,55 @@ msgstr ""
 "Dane: <a href=\"https://api.raporty.pse.pl/\" rel=\"noopener\">API raportów "
 "PSE</a>, ceny rynku dnia następnego w interwałach 15-minutowych od 14 "
 "czerwca 2024. Energy Clock to niezależny projekt, niepowiązany z PSE."
+
+#, python-format
+msgid "Prices for %(when)s fall below your threshold of %(threshold)s PLN/MWh."
+msgstr "Ceny na %(when)s spadają poniżej Twojego progu %(threshold)s PLN/MWh."
+
+msgid "Lowest price"
+msgstr "Najniższa cena"
+
+msgid "Intervals below the threshold"
+msgstr "Interwały poniżej progu"
+
+#, python-format
+msgid "Prices for %(when)s go negative in %(count)s intervals."
+msgstr "Ceny na %(when)s są ujemne w %(count)s interwałach."
+
+msgid "Hours with a negative price"
+msgstr "Godziny z ceną ujemną"
+
+#, python-format
+msgid ""
+"On %(when)s the hour %(start)s–%(end)s is both cheap and clean: about "
+"%(share)s %% renewables in the generation plan at a price below the daily "
+"average."
+msgstr "%(when)s godzina %(start)s–%(end)s jest zarazem tania i czysta: około %(share)s %% OZE w planie generacji przy cenie poniżej średniej dobowej."
+
+msgid "Average price in the window"
+msgstr "Średnia cena w oknie"
+
+msgid "Carbon intensity"
+msgstr "Emisyjność"
+
+msgid "Daily average"
+msgstr "Średnia dobowa"
+
+msgid "Cheapest 2 h window for a 2 kW appliance"
+msgstr "Najtańsze okno 2 h dla urządzenia 2 kW"
+
+msgid "Open the planner"
+msgstr "Otwórz planer"
+
+msgid ""
+"These are wholesale day-ahead prices published by PSE, not your bill; the "
+"saving is an estimate."
+msgstr "To hurtowe ceny rynku dnia następnego publikowane przez PSE, nie Twoja faktura; oszczędność jest szacunkowa."
+
+msgid ""
+"You receive this message because you set up an alert in Energy Clock. Manage "
+"your alerts in your account:"
+msgstr "Dostajesz tę wiadomość, bo masz ustawiony alert w Energy Clock. Alertami zarządzasz w swoim koncie:"
 
 msgid ""
 "The cheapest hours are not always the cleanest. Compare both rankings for "
@@ -280,8 +548,8 @@ msgstr "zaplanuj swoje"
 msgid "open the planner"
 msgstr "otwórz planer"
 
-msgid "RES"
-msgstr "OZE"
+msgid "Templates"
+msgstr "Szablony"
 
 msgid "Bar chart of prices per 15-minute interval"
 msgstr "Wykres słupkowy cen w interwałach 15-minutowych"
@@ -506,10 +774,10 @@ msgid ""
 "ignoring imports and grid losses. The plan is published by PSE and revised "
 "during the day."
 msgstr ""
-"Emisyjność jest przybliżona: wynika z planowanego miksu generacji przy 0 "
-"g/kWh dla fotowoltaiki i wiatru oraz 750 g/kWh dla jednostek "
-"konwencjonalnych, bez importu i strat sieciowych. Plan publikuje PSE i "
-"koryguje go w ciągu dnia."
+"Emisyjność jest przybliżona: wynika z planowanego miksu generacji przy 0 g/"
+"kWh dla fotowoltaiki i wiatru oraz 750 g/kWh dla jednostek konwencjonalnych, "
+"bez importu i strat sieciowych. Plan publikuje PSE i koryguje go w ciągu "
+"dnia."
 
 msgid "Demand"
 msgstr "Zapotrzebowanie"
@@ -608,16 +876,16 @@ msgid ""
 "A dynamic tariff would have been <strong>%(amount)s PLN cheaper</strong> "
 "over this period."
 msgstr ""
-"Taryfa dynamiczna byłaby w tym okresie <strong>tańsza o %(amount)s "
-"PLN</strong>."
+"Taryfa dynamiczna byłaby w tym okresie <strong>tańsza o %(amount)s PLN</"
+"strong>."
 
 #, python-format
 msgid ""
 "Your fixed price would have been <strong>%(amount)s PLN cheaper</strong> "
 "over this period."
 msgstr ""
-"Twoja cena stała byłaby w tym okresie <strong>tańsza o %(amount)s "
-"PLN</strong>."
+"Twoja cena stała byłaby w tym okresie <strong>tańsza o %(amount)s PLN</"
+"strong>."
 
 msgid "Both tariffs would have cost the same over this period."
 msgstr "Obie taryfy kosztowałyby w tym okresie tyle samo."
@@ -721,9 +989,6 @@ msgstr "Interwały"
 msgid "Average price"
 msgstr "Średnia cena"
 
-msgid "Lowest price"
-msgstr "Najniższa cena"
-
 msgid "Highest price"
 msgstr "Najwyższa cena"
 
@@ -765,7 +1030,9 @@ msgid "Intervals with a negative price by month"
 msgstr "Interwały z ceną ujemną według miesięcy"
 
 msgid "15-minute intervals where the day-ahead price fell below zero"
-msgstr "Interwały 15-minutowe, w których cena rynku dnia następnego spadła poniżej zera"
+msgstr ""
+"Interwały 15-minutowe, w których cena rynku dnia następnego spadła poniżej "
+"zera"
 
 msgid "Negative price intervals by month"
 msgstr "Interwały z ceną ujemną według miesięcy"
