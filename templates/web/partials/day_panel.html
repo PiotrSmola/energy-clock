@@ -9,7 +9,8 @@
 </div>
 
 {% if panel.available %}
-  {% include "web/partials/chart.html" with chart=panel.chart %}
+  <div class="chart-wide">{% include "web/partials/chart.html" with chart=panel.chart %}</div>
+  <div class="chart-narrow">{% include "web/partials/chart.html" with chart=panel.hourly_chart hourly=True %}</div>
 
   <div class="legend" aria-label="{% translate 'Price scale' %}">
     {% for entry in panel.legend %}

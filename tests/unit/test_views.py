@@ -52,7 +52,7 @@ def test_home_shows_price_now_and_windows(client: Client, two_days: None) -> Non
     assert "Cheapest 2 h window" in body
     assert "Most expensive 2 h window" in body
     assert 'class="bar' in body
-    assert body.count('class="bar ') == 96
+    assert body.count('class="bar ') == 96 + 24
     assert "wholesale day-ahead market prices" in body
     assert "<html" in body
 
@@ -89,7 +89,7 @@ def test_home_tomorrow_with_data_renders_chart(client: Client, two_days: None) -
     response = client.get(reverse("web:home"), {"day": "tomorrow"})
 
     body = response.content.decode()
-    assert body.count('class="bar ') == 96
+    assert body.count('class="bar ') == 96 + 24
     assert "Saturday, 5 September 2026" in body
 
 

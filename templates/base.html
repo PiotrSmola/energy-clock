@@ -1,12 +1,12 @@
 {% load static i18n %}<!doctype html>
-<html lang="{{ LANGUAGE_CODE }}" data-theme="light">
+<html lang="{{ LANGUAGE_CODE }}" data-theme="{{ theme|default:'auto' }}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{% block title %}Energy Clock{% endblock %}</title>
 <meta name="description" content="{% block description %}{% translate "When to switch on an appliance to pay less for electricity: Polish day-ahead prices in 15-minute intervals, with a cheapest-window planner." %}{% endblock %}">
-<meta name="color-scheme" content="light dark">
-<meta name="theme-color" content="#f4f4f1">
+<meta name="color-scheme" content="{% if theme == 'dark' %}dark{% elif theme == 'light' %}light{% else %}light dark{% endif %}">
+<meta name="theme-color" content="{% if theme == 'dark' %}#121316{% else %}#f4f4f1{% endif %}">
 <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
 <link rel="preload" href="{% static 'fonts/bricolage-grotesque-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="{% static 'css/app.css' %}">
@@ -41,6 +41,16 @@
         <a href="{% url 'web:login' %}"{% if nav == 'account' %} aria-current="page"{% endif %}>{% translate "Sign in" %}</a>
       {% endif %}
     </div>
+    <form class="theme" action="{% url 'web:set_theme' %}" method="post" aria-label="{% translate 'Theme' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <button type="submit" name="theme" value="light" title="{% translate 'Light theme' %}" aria-label="{% translate 'Light theme' %}"{% if theme == 'light' %} aria-current="true"{% endif %}>
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="3.6" fill="none" stroke="currentColor" stroke-width="1.5"/><path d="M10 2.5v2.2M10 15.3v2.2M2.5 10h2.2M15.3 10h2.2M4.7 4.7l1.6 1.6M13.7 13.7l1.6 1.6M4.7 15.3l1.6-1.6M13.7 6.3l1.6-1.6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+      </button>
+      <button type="submit" name="theme" value="dark" title="{% translate 'Dark theme' %}" aria-label="{% translate 'Dark theme' %}"{% if theme == 'dark' %} aria-current="true"{% endif %}>
+        <svg viewBox="0 0 20 20" aria-hidden="true" focusable="false"><path d="M15.5 12.6A6.2 6.2 0 0 1 7.4 4.5a6.4 6.4 0 1 0 8.1 8.1z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </button>
+    </form>
     <form class="lang" action="{% url 'set_language' %}" method="post" aria-label="{% translate 'Language' %}">
       {% csrf_token %}
       <input type="hidden" name="next" value="{{ request.get_full_path }}">

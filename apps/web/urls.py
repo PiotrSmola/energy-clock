@@ -5,6 +5,7 @@ from apps.web import accounts, api, views, widget
 app_name = "web"
 
 urlpatterns = [
+    path("theme", views.set_theme, name="set_theme"),
     path("widget", widget.widget, name="widget"),
     path("widget.svg", widget.widget_svg, name="widget_svg"),
     path("export.csv", api.export_csv, name="export_csv"),

@@ -52,7 +52,42 @@
   --t-med: 280ms;
 }
 
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    color-scheme: dark;
+    --bg: #121316;
+    --surface: #191a1e;
+    --surface-2: #202126;
+    --ink: #ecebe6;
+    --ink-2: #bdbcb6;
+    --ink-3: #8f8f8a;
+    --line: #2d2e33;
+    --line-2: #24252a;
+    --now: #ff5c9d;
+    --now-soft: rgba(255, 92, 157, 0.16);
+    --p0: #2f8fb3;
+    --p1: #47a9c4;
+    --p2: #86c4c6;
+    --p3: #7d7a72;
+    --p4: #e0a35a;
+    --p5: #e07a4a;
+    --p6: #d24a2e;
+    --win: rgba(236, 235, 230, 0.08);
+    --win-line: rgba(236, 235, 230, 0.5);
+    --warn: #e7c072;
+    --warn-bg: #2a2413;
+    --warn-line: #4d3f1d;
+    --focus: #6da2ff;
+    --tip-bg: #ecebe6;
+    --tip-fg: #121316;
+    --mix-pv: #d9b85a;
+    --mix-wind: #6f8a98;
+    --mix-conv: #9a9da4;
+  }
+}
+
 [data-theme="dark"] {
+  color-scheme: dark;
   --bg: #121316;
   --surface: #191a1e;
   --surface-2: #202126;
@@ -286,6 +321,60 @@ table,
   margin-left: 12px;
   display: flex;
   gap: 2px;
+}
+
+.theme {
+  margin-left: 12px;
+  display: flex;
+  gap: 2px;
+}
+
+.theme button {
+  background: none;
+  border: 0;
+  padding: 6px;
+  color: var(--ink-3);
+  cursor: pointer;
+  display: inline-flex;
+  border-bottom: 1px solid transparent;
+  transition: color var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease), transform var(--t-med) var(--ease);
+}
+
+.theme button svg {
+  width: 16px;
+  height: 16px;
+}
+
+.theme button:hover {
+  color: var(--ink);
+  transform: rotate(15deg);
+}
+
+.theme button[aria-current="true"] {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
+}
+
+.theme-transition,
+.theme-transition * {
+  transition: background-color var(--t-med) var(--ease), color var(--t-med) var(--ease), border-color var(--t-med) var(--ease), fill var(--t-med) var(--ease), stroke var(--t-med) var(--ease) !important;
+}
+
+.chart-narrow {
+  display: none;
+}
+
+.chart--hourly .chart-svg {
+  min-width: 0;
+}
+
+.chart--hourly .grid text,
+.chart--hourly .xlabels text {
+  font-size: 13px;
+}
+
+.chart--hourly .now-marker text {
+  font-size: 12px;
 }
 
 .flash {
@@ -1868,6 +1957,43 @@ fieldset.field legend {
 
   .field-row {
     grid-template-columns: 1fr;
+  }
+
+  .chart-wide {
+    display: none;
+  }
+
+  .chart-narrow {
+    display: block;
+  }
+
+  .top-row {
+    flex-wrap: wrap;
+    row-gap: 0;
+    padding-bottom: 6px;
+  }
+
+  .nav {
+    order: 5;
+    width: 100%;
+    overflow-x: auto;
+    gap: 16px;
+    padding-bottom: 2px;
+  }
+
+  .nav a {
+    padding: 8px 0 10px;
+    white-space: nowrap;
+  }
+
+  .account,
+  .theme,
+  .lang {
+    margin-left: 0;
+  }
+
+  .account {
+    margin-left: auto;
   }
 }
 

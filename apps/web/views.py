@@ -3,9 +3,11 @@ from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Any
 
-from django.http import HttpRequest, HttpResponse
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.utils import timezone
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.http import require_POST
 
 from apps.market.models import GenerationPoint, PricePoint
 from apps.market.queries import (
@@ -46,10 +48,20 @@ from apps.web.analysis import (
     summarize_mix,
     weekday_bars,
 )
-from apps.web.charts import BarsChart, ChartModel, build_bars, build_chart, build_ring
+from apps.web.charts import (
+    BarsChart,
+    ChartModel,
+    aggregate_hourly,
+    build_bars,
+    build_chart,
+    build_ring,
+)
+from apps.web.context_processors import THEME_COOKIE, THEME_COOKIE_AGE, THEMES
 
 DAY_KEYS = ("today", "tomorrow")
 RESULT_HORIZON = timedelta(hours=48)
+HOUR = timedelta(hours=1)
+HOURLY_CHART_WIDTH = 480
 
 
 @dataclass(frozen=True, slots=True)
@@ -76,6 +88,7 @@ class DayPanel:
     day: date
     summary: DaySummary
     chart: ChartModel | None
+    hourly_chart: ChartModel | None
     rows: list[IntervalRow]
     legend: list[LegendEntry]
     freshness: Freshness
@@ -130,11 +143,22 @@ def build_day_panel(
 ) -> DayPanel:
     summary = summarize_day(day, now)
     chart = None
+    hourly_chart = None
     rows: list[IntervalRow] = []
     if summary.points:
         generation = generation_by_interval_end(day)
         chart = build_chart(
             summary.points, generation, thresholds=thresholds, now=now, window=summary.cheapest
+        )
+        hourly_points, hourly_generation = aggregate_hourly(summary.points, generation)
+        hourly_chart = build_chart(
+            hourly_points,
+            hourly_generation,
+            thresholds=thresholds,
+            now=now,
+            window=summary.cheapest,
+            slot=HOUR,
+            width=HOURLY_CHART_WIDTH,
         )
         rows = interval_rows(summary, generation, thresholds, now)
     return DayPanel(
@@ -142,6 +166,7 @@ def build_day_panel(
         day=day,
         summary=summary,
         chart=chart,
+        hourly_chart=hourly_chart,
         rows=rows,
         legend=legend_entries(thresholds),
         freshness=fresh,
@@ -153,6 +178,20 @@ def build_day_panel(
 
 def is_htmx(request: HttpRequest) -> bool:
     return request.headers.get("HX-Request") == "true"
+
+
+@require_POST
+def set_theme(request: HttpRequest) -> HttpResponse:
+    chosen = request.POST.get("theme", "")
+    next_url = request.POST.get("next", "/")
+    if not url_has_allowed_host_and_scheme(next_url, allowed_hosts={request.get_host()}):
+        next_url = "/"
+    response = HttpResponseRedirect(next_url)
+    if chosen in THEMES:
+        response.set_cookie(THEME_COOKIE, chosen, max_age=THEME_COOKIE_AGE, samesite="Lax")
+    else:
+        response.delete_cookie(THEME_COOKIE)
+    return response
 
 
 def home(request: HttpRequest) -> HttpResponse:

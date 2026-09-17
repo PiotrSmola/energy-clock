@@ -1,8 +1,8 @@
 import math
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
-from datetime import datetime
-from decimal import ROUND_CEILING, Decimal
+from datetime import datetime, timedelta
+from decimal import ROUND_CEILING, ROUND_HALF_UP, Decimal
 
 from apps.market.models import GenerationPoint, PricePoint
 from apps.market.queries import price_bucket, res_share_percent
@@ -11,6 +11,7 @@ from apps.planner.optimizer import Window
 
 CHART_WIDTH = 960
 CHART_HEIGHT = 260
+HOUR = timedelta(hours=1)
 COMPACT_HEIGHT = 160
 MARGIN_LEFT = 52
 MARGIN_RIGHT = 12
@@ -125,6 +126,45 @@ def axis_bounds(prices: Sequence[Decimal]) -> tuple[Decimal, Decimal, Decimal]:
     return y_min, y_max, step
 
 
+def aggregate_hourly(
+    points: Sequence[PricePoint], generation: dict[datetime, GenerationPoint]
+) -> tuple[list[PricePoint], dict[datetime, GenerationPoint]]:
+    groups: dict[datetime, list[PricePoint]] = {}
+    for point in points:
+        start_utc = point.dtime_utc - INTERVAL
+        hour_start = start_utc.replace(minute=0, second=0, microsecond=0)
+        groups.setdefault(hour_start, []).append(point)
+    hourly_points: list[PricePoint] = []
+    hourly_generation: dict[datetime, GenerationPoint] = {}
+    for hour_start, members in sorted(groups.items()):
+        hour_end = hour_start + HOUR
+        average = sum((member.price_pln_mwh for member in members), Decimal(0)) / len(members)
+        hourly_points.append(
+            PricePoint(
+                dtime_utc=hour_end,
+                business_date=members[0].business_date,
+                price_pln_mwh=average.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP),
+            )
+        )
+        plans = [generation[m.dtime_utc] for m in members if m.dtime_utc in generation]
+        if plans:
+            hourly_generation[hour_end] = GenerationPoint(
+                dtime_utc=hour_end,
+                business_date=members[0].business_date,
+                pv_mw=mean_or_none([plan.pv_mw for plan in plans]),
+                wind_mw=mean_or_none([plan.wind_mw for plan in plans]),
+                conventional_mw=mean_or_none([plan.conventional_mw for plan in plans]),
+            )
+    return hourly_points, hourly_generation
+
+
+def mean_or_none(values: list[Decimal | None]) -> Decimal | None:
+    present = [value for value in values if value is not None]
+    if not present:
+        return None
+    return sum(present, Decimal(0)) / len(present)
+
+
 def build_chart(
     points: Sequence[PricePoint],
     generation: dict[datetime, GenerationPoint],
@@ -135,9 +175,11 @@ def build_chart(
     span: tuple[datetime, datetime] | None = None,
     compact: bool = False,
     secondary_window: Window | None = None,
+    slot: timedelta = INTERVAL,
+    width: int = CHART_WIDTH,
 ) -> ChartModel:
     height = COMPACT_HEIGHT if compact else CHART_HEIGHT
-    left, right = float(MARGIN_LEFT), float(CHART_WIDTH - MARGIN_RIGHT)
+    left, right = float(MARGIN_LEFT), float(width - MARGIN_RIGHT)
     top, bottom = float(MARGIN_TOP), float(height - MARGIN_BOTTOM)
     span_start, span_end = span or day_bounds_utc(points[0].business_date)
     span_seconds = (span_end - span_start).total_seconds()
@@ -153,11 +195,11 @@ def build_chart(
         return bottom - (float(value) - float(y_min)) / y_span * (bottom - top)
 
     zero_y = y_of(Decimal(0))
-    slot_width = (right - left) * INTERVAL.total_seconds() / span_seconds
+    slot_width = (right - left) * slot.total_seconds() / span_seconds
     bar_width = slot_width * (1 - BAR_GAP_RATIO)
     bars: list[Bar] = []
     for index, point in enumerate(points):
-        start_utc = point.dtime_utc - INTERVAL
+        start_utc = point.dtime_utc - slot
         value_y = y_of(point.price_pln_mwh)
         is_now = now is not None and start_utc <= now < point.dtime_utc
         in_window = (
@@ -190,7 +232,7 @@ def build_chart(
     window_x1, window_x2 = window_span(window, span_start, span_end, x_of)
     secondary_x1, secondary_x2 = window_span(secondary_window, span_start, span_end, x_of)
     return ChartModel(
-        width=CHART_WIDTH,
+        width=width,
         height=height,
         left=left,
         right=right,

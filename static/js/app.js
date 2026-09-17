@@ -19,6 +19,49 @@
     window.setTimeout(() => target.classList.remove("swap-in"), 900);
   });
 
+  const THEME_COOKIE = "energy_clock_theme";
+
+  const applyTheme = (value) => {
+    const root = document.documentElement;
+    root.classList.add("theme-transition");
+    root.dataset.theme = value;
+    document.cookie = `${THEME_COOKIE}=${value}; max-age=31536000; path=/; samesite=lax`;
+    document.querySelectorAll(".theme button").forEach((button) => {
+      if (button.value === value) {
+        button.setAttribute("aria-current", "true");
+      } else {
+        button.removeAttribute("aria-current");
+      }
+    });
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) {
+      meta.setAttribute("content", value === "dark" ? "#121316" : "#f4f4f1");
+    }
+    window.setTimeout(() => root.classList.remove("theme-transition"), 400);
+  };
+
+  document.addEventListener("click", (event) => {
+    const button = event.target.closest(".theme button");
+    if (!button) {
+      return;
+    }
+    event.preventDefault();
+    applyTheme(button.value);
+  });
+
+  const markSystemTheme = () => {
+    const root = document.documentElement;
+    if (root.dataset.theme !== "auto") {
+      return;
+    }
+    const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    document.querySelectorAll(".theme button").forEach((button) => {
+      button.classList.toggle("is-system", button.value === (dark ? "dark" : "light"));
+    });
+  };
+
+  markSystemTheme();
+
   const tipFor = (bar) => {
     const figure = bar.closest(".chart");
     return figure ? figure.querySelector(".chart-tip") : null;

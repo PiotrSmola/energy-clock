@@ -1,5 +1,5 @@
 {% load i18n l10n %}
-<figure class="chart{% if compact %} chart--compact{% endif %}" data-label-res="{% translate 'RES' %}">
+<figure class="chart{% if compact %} chart--compact{% endif %}{% if hourly %} chart--hourly{% endif %}" data-label-res="{% translate 'RES' %}">
   <div class="chart-scroll">
     <svg class="chart-svg" viewBox="0 0 {{ chart.width }} {{ chart.height }}" role="img" aria-label="{% translate 'Bar chart of prices per 15-minute interval' %}" focusable="false" data-start="{{ chart.span_start_epoch|unlocalize }}" data-end="{{ chart.span_end_epoch|unlocalize }}" data-left="{{ chart.left|unlocalize }}" data-right="{{ chart.right|unlocalize }}">
       <defs>
