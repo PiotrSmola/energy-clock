@@ -1,8 +1,9 @@
 import logging
-from datetime import timedelta
+from datetime import date, timedelta
 from typing import Any
 
 from celery import Task, shared_task
+from celery.signals import worker_ready
 
 from apps.market.ingest import IngestResult, ingest_generation, ingest_prices, ingest_range
 from apps.market.models import IngestRun
@@ -14,7 +15,14 @@ RETRY_BASE_SECONDS = 5 * 60
 RETRY_MAX_SECONDS = 60 * 60
 MAX_PRICE_RETRIES = 6
 GAP_FILL_PAUSE_SECONDS = 0.2
+STARTUP_GAP_FILL_DELAY_SECONDS = 20
 RETRY_STATUSES = frozenset({IngestRun.Status.PENDING, IngestRun.Status.FAILED})
+
+
+def schedule_alert_check(day: date) -> None:
+    from apps.planner.tasks import check_alerts
+
+    check_alerts.delay(day.isoformat())
 
 
 def result_payload(result: IngestResult) -> dict[str, Any]:
@@ -43,6 +51,8 @@ def fetch_tomorrow_prices(self: Task) -> dict[str, Any]:
         )
         raise self.retry(countdown=delay)
     logger.info("Prices for %s ingested: %d records (%s)", tomorrow, result.records, result.status)
+    if result.is_ok:
+        schedule_alert_check(tomorrow)
     return result_payload(result)
 
 
@@ -71,3 +81,8 @@ def fill_gaps(days: int = 7) -> list[dict[str, Any]]:
     )
     logger.info("Gap fill re-ingested %d day/endpoint pairs", len(results))
     return [result_payload(result) for result in results]
+
+
+@worker_ready.connect
+def fill_gaps_when_worker_starts(sender: object, **kwargs: object) -> None:
+    fill_gaps.apply_async(kwargs={"days": 7}, countdown=STARTUP_GAP_FILL_DELAY_SECONDS)

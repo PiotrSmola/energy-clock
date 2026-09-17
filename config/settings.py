@@ -183,6 +183,14 @@ DEFAULT_FROM_EMAIL = "Energy Clock <alerts@energy-clock.local>"
 
 PSE_API_BASE = os.environ.get("PSE_API_BASE", "https://api.raporty.pse.pl/api")
 
+SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000")
+
+LOGIN_URL = "/account/login"
+
+LOGIN_REDIRECT_URL = "/account"
+
+LOGOUT_REDIRECT_URL = "/"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,

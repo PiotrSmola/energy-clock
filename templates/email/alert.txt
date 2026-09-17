@@ -1,0 +1,21 @@
+{% load i18n energy %}{% autoescape off %}{% if kind == "PRICE_BELOW" %}{% blocktranslate trimmed with threshold=threshold|money:0 when=day|date:"l, j E Y" %}Prices for {{ when }} fall below your threshold of {{ threshold }} PLN/MWh.{% endblocktranslate %}
+
+{% translate "Lowest price" %}: {{ lowest_price|money }} PLN/MWh ({{ lowest_at|date:"H:i" }})
+{% translate "Intervals below the threshold" %}: {{ intervals_below }} ({{ hours_below }} h)
+{% elif kind == "NEGATIVE_PRICE" %}{% blocktranslate trimmed with when=day|date:"l, j E Y" count=intervals_below %}Prices for {{ when }} go negative in {{ count }} intervals.{% endblocktranslate %}
+
+{% translate "Lowest price" %}: {{ lowest_price|money }} PLN/MWh ({{ lowest_at|date:"H:i" }})
+{% translate "Hours with a negative price" %}: {{ hours_below }} h
+{% else %}{% blocktranslate trimmed with when=day|date:"l, j E Y" start=window_start|date:"H:i" end=window_end|date:"H:i" share=res_share %}On {{ when }} the hour {{ start }}–{{ end }} is both cheap and clean: about {{ share }} % renewables in the generation plan at a price below the daily average.{% endblocktranslate %}
+
+{% translate "Average price in the window" %}: {{ window_price|money }} PLN/MWh
+{% translate "Carbon intensity" %}: ≈ {{ window_carbon }} g/kWh
+{% endif %}
+{% translate "Daily average" %}: {{ day_average|money }} PLN/MWh
+{% if reference_window %}{% translate "Cheapest 2 h window for a 2 kW appliance" %}: {{ reference_window.start_utc|local_hm }}–{{ reference_window.end_utc|local_hm }} ({{ reference_window.cost_pln|money }} PLN)
+{% endif %}
+{{ site_url }}/planner
+
+{% translate "These are wholesale day-ahead prices published by PSE, not your bill; the saving is an estimate." %}
+{% translate "You receive this message because you set up an alert in Energy Clock. Manage your alerts in your account:" %} {{ site_url }}/account
+{% endautoescape %}

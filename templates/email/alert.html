@@ -1,0 +1,35 @@
+{% load i18n energy %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}">
+<head><meta charset="utf-8"><title>Energy Clock</title></head>
+<body style="margin:0;padding:24px;background:#f4f4f1;color:#16171a;font-family:'Segoe UI',system-ui,sans-serif;font-size:15px;line-height:1.45">
+  <table role="presentation" cellpadding="0" cellspacing="0" style="max-width:560px;margin:0 auto;border:1px solid #d8d8d3;background:#ffffff">
+    <tr><td style="padding:16px 20px;border-bottom:1px solid #d8d8d3;font-weight:600;font-size:16px">Energy Clock</td></tr>
+    <tr><td style="padding:20px">
+      {% if kind == "PRICE_BELOW" %}
+        <p style="margin:0 0 14px;font-size:17px">{% blocktranslate trimmed with threshold=threshold|money:0 when=day|date:"l, j E Y" %}Prices for {{ when }} fall below your threshold of {{ threshold }} PLN/MWh.{% endblocktranslate %}</p>
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #e8e8e4">
+          <tr><td style="padding:8px 0;color:#62656b;border-bottom:1px solid #e8e8e4">{% translate "Lowest price" %}</td><td style="padding:8px 0;text-align:right;border-bottom:1px solid #e8e8e4;font-variant-numeric:tabular-nums"><strong>{{ lowest_price|money }}</strong> PLN/MWh · {{ lowest_at|date:"H:i" }}</td></tr>
+          <tr><td style="padding:8px 0;color:#62656b;border-bottom:1px solid #e8e8e4">{% translate "Intervals below the threshold" %}</td><td style="padding:8px 0;text-align:right;border-bottom:1px solid #e8e8e4">{{ intervals_below }} ({{ hours_below }} h)</td></tr>
+      {% elif kind == "NEGATIVE_PRICE" %}
+        <p style="margin:0 0 14px;font-size:17px">{% blocktranslate trimmed with when=day|date:"l, j E Y" count=intervals_below %}Prices for {{ when }} go negative in {{ count }} intervals.{% endblocktranslate %}</p>
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #e8e8e4">
+          <tr><td style="padding:8px 0;color:#62656b;border-bottom:1px solid #e8e8e4">{% translate "Lowest price" %}</td><td style="padding:8px 0;text-align:right;border-bottom:1px solid #e8e8e4;font-variant-numeric:tabular-nums"><strong>{{ lowest_price|money }}</strong> PLN/MWh · {{ lowest_at|date:"H:i" }}</td></tr>
+          <tr><td style="padding:8px 0;color:#62656b;border-bottom:1px solid #e8e8e4">{% translate "Hours with a negative price" %}</td><td style="padding:8px 0;text-align:right;border-bottom:1px solid #e8e8e4">{{ hours_below }} h</td></tr>
+      {% else %}
+        <p style="margin:0 0 14px;font-size:17px">{% blocktranslate trimmed with when=day|date:"l, j E Y" start=window_start|date:"H:i" end=window_end|date:"H:i" share=res_share %}On {{ when }} the hour {{ start }}–{{ end }} is both cheap and clean: about {{ share }} % renewables in the generation plan at a price below the daily average.{% endblocktranslate %}</p>
+        <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-top:1px solid #e8e8e4">
+          <tr><td style="padding:8px 0;color:#62656b;border-bottom:1px solid #e8e8e4">{% translate "Average price in the window" %}</td><td style="padding:8px 0;text-align:right;border-bottom:1px solid #e8e8e4"><strong>{{ window_price|money }}</strong> PLN/MWh</td></tr>
+          <tr><td style="padding:8px 0;color:#62656b;border-bottom:1px solid #e8e8e4">{% translate "Carbon intensity" %}</td><td style="padding:8px 0;text-align:right;border-bottom:1px solid #e8e8e4">≈ {{ window_carbon }} g/kWh</td></tr>
+      {% endif %}
+          <tr><td style="padding:8px 0;color:#62656b;border-bottom:1px solid #e8e8e4">{% translate "Daily average" %}</td><td style="padding:8px 0;text-align:right;border-bottom:1px solid #e8e8e4">{{ day_average|money }} PLN/MWh</td></tr>
+          {% if reference_window %}<tr><td style="padding:8px 0;color:#62656b">{% translate "Cheapest 2 h window for a 2 kW appliance" %}</td><td style="padding:8px 0;text-align:right">{{ reference_window.start_utc|local_hm }}–{{ reference_window.end_utc|local_hm }} · {{ reference_window.cost_pln|money }} PLN</td></tr>{% endif %}
+        </table>
+      <p style="margin:18px 0 0"><a href="{{ site_url }}/planner" style="color:#16171a">{% translate "Open the planner" %}</a></p>
+    </td></tr>
+    <tr><td style="padding:14px 20px;border-top:1px solid #d8d8d3;color:#62656b;font-size:12px">
+      {% translate "These are wholesale day-ahead prices published by PSE, not your bill; the saving is an estimate." %}<br>
+      {% translate "You receive this message because you set up an alert in Energy Clock. Manage your alerts in your account:" %} <a href="{{ site_url }}/account" style="color:#62656b">{{ site_url }}/account</a>
+    </td></tr>
+  </table>
+</body>
+</html>
