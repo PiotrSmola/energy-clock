@@ -23,7 +23,7 @@ from apps.market.queries import (
 )
 from apps.market.timeutils import INTERVAL, day_bounds_utc, to_local
 from apps.planner.forms import DEFAULT_HOURLY_SHAPE, HOURS, PlannerForm, TariffForm
-from apps.planner.models import Appliance
+from apps.planner.models import Household, appliances_for
 from apps.planner.optimizer import PriceSlot
 from apps.planner.services import (
     REFERENCE_DURATION_MINUTES,
@@ -211,7 +211,7 @@ def result_chart(plan: Plan, thresholds: list[Decimal]) -> ChartModel | None:
 def planner_context(request: HttpRequest) -> dict[str, Any]:
     now = timezone.now()
     submitted = bool(request.GET)
-    form = PlannerForm(request.GET or None)
+    form = PlannerForm(request.GET or None, user=request.user)
     plan: Plan | None = None
     chart: ChartModel | None = None
     if submitted and form.is_valid():
@@ -225,19 +225,23 @@ def planner_context(request: HttpRequest) -> dict[str, Any]:
         "now": now,
         "submitted": submitted,
         "freshness": freshness(now),
-        "presets": appliance_presets(),
-        "appliances": list(Appliance.objects.filter(user=None)),
         "now_point": price_point_at(now),
+        **appliance_context(request),
     }
 
 
-def appliance_presets() -> dict[str, dict[str, str | int]]:
+def appliance_context(request: HttpRequest) -> dict[str, Any]:
+    appliances = list(appliances_for(request.user))
     return {
-        str(appliance.pk): {
-            "duration_minutes": appliance.duration_minutes,
-            "power_kw": str(appliance.power_kw),
-        }
-        for appliance in Appliance.objects.filter(user=None)
+        "system_appliances": [appliance for appliance in appliances if appliance.user_id is None],
+        "own_appliances": [appliance for appliance in appliances if appliance.user_id is not None],
+        "presets": {
+            str(appliance.pk): {
+                "duration_minutes": appliance.duration_minutes,
+                "power_kw": str(appliance.power_kw),
+            }
+            for appliance in appliances
+        },
     }
 
 
@@ -279,7 +283,7 @@ def mix(request: HttpRequest) -> HttpResponse:
 def compare_context(request: HttpRequest) -> dict[str, Any]:
     now = timezone.now()
     today = to_local(now).date()
-    form = PlannerForm(request.GET or None)
+    form = PlannerForm(request.GET or None, user=request.user)
     duration = REFERENCE_DURATION_MINUTES
     power = REFERENCE_POWER_KW
     label = str(reference_request().label)
@@ -332,9 +336,8 @@ def compare_context(request: HttpRequest) -> dict[str, Any]:
         "duration": duration,
         "power": power,
         "label": label,
-        "appliances": list(Appliance.objects.filter(user=None)),
-        "presets": appliance_presets(),
         "freshness": freshness(now),
+        **appliance_context(request),
     }
 
 
@@ -354,13 +357,13 @@ def tariff_context(request: HttpRequest) -> dict[str, Any]:
     chart = None
     period: tuple[date, date] | None = None
     if not request.GET:
-        form = TariffForm(
-            {
-                name: field.initial
-                for name, field in form.fields.items()
-                if field.initial is not None
-            }
-        )
+        defaults = {
+            name: field.initial for name, field in form.fields.items() if field.initial is not None
+        }
+        household_price = household_fixed_price(request)
+        if household_price is not None:
+            defaults["fixed_price_pln_kwh"] = household_price
+        form = TariffForm(defaults)
     if form.is_valid():
         period = form.period(today)
         comparison = simulate_tariff(
@@ -385,6 +388,17 @@ def tariff_context(request: HttpRequest) -> dict[str, Any]:
         "now": now,
         "freshness": freshness(now),
     }
+
+
+def household_fixed_price(request: HttpRequest) -> Decimal | None:
+    if not request.user.is_authenticated:
+        return None
+    price: Decimal | None = (
+        Household.objects.filter(user=request.user.pk)
+        .values_list("tariff_fixed_pln_kwh", flat=True)
+        .first()
+    )
+    return price
 
 
 def tariff_slots(start: date, end: date) -> list[PriceSlot]:

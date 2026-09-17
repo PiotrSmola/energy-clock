@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Sign in" %} · Energy Clock{% endblock %}
+{% block content %}
+<section class="auth">
+  <h1>{% translate "Sign in" %}</h1>
+  <form method="post" action="{% url 'web:login' %}" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="next" value="{{ next|default:'' }}">
+    {% for error in form.non_field_errors %}<p class="error">{{ error }}</p>{% endfor %}
+    {% include "partials/form_field.html" with field=form.username %}
+    {% include "partials/form_field.html" with field=form.password %}
+    <button type="submit" class="btn btn--primary">{% translate "Sign in" %}</button>
+  </form>
+  <p class="muted auth-switch">{% translate "No account yet?" %} <a href="{% url 'web:register' %}">{% translate "Create one" %}</a></p>
+  <p class="muted">{% translate "There is no password reset: this demo delivers mail only to a local inbox, so keep your password safe." %}</p>
+</section>
+{% endblock %}

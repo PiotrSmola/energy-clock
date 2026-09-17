@@ -240,10 +240,174 @@ table,
   border-bottom-color: var(--ink);
 }
 
-.lang {
+.account {
   margin-left: auto;
   display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+
+.account a {
+  text-decoration: none;
+  color: var(--ink-3);
+  transition: color var(--t-fast) var(--ease);
+}
+
+.account a:hover,
+.account a[aria-current="page"] {
+  color: var(--ink);
+}
+
+.account form {
+  display: inline;
+}
+
+.account button,
+.linklike {
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--ink-3);
+  cursor: pointer;
+  font-size: 13px;
+  text-decoration: underline transparent;
+  text-underline-offset: 4px;
+  transition: color var(--t-fast) var(--ease), text-decoration-color var(--t-fast) var(--ease);
+}
+
+.account button:hover,
+.linklike:hover {
+  color: var(--ink);
+  text-decoration-color: var(--line);
+}
+
+.lang {
+  margin-left: 12px;
+  display: flex;
   gap: 2px;
+}
+
+.flash {
+  list-style: none;
+  margin: 14px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+
+.flash li {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 8px 12px;
+  font-size: 13px;
+  border-radius: var(--radius);
+  animation: fade-up var(--t-med) var(--ease) both;
+}
+
+.auth {
+  max-width: 400px;
+  padding-top: 32px;
+}
+
+.auth h1 {
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.auth-switch {
+  margin-top: 16px;
+}
+
+.profile {
+  display: grid;
+  grid-template-columns: minmax(280px, 400px) 1fr;
+  gap: 48px;
+  padding-top: 26px;
+}
+
+.profile h1 {
+  font-size: 22px;
+}
+
+.profile h2 {
+  font-size: 15px;
+  margin: 26px 0 6px;
+}
+
+.profile h2:first-child {
+  margin-top: 0;
+}
+
+.signout {
+  margin-top: 24px;
+  border-top: 1px solid var(--line-2);
+  padding-top: 16px;
+}
+
+.btn--ghost {
+  background: transparent;
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.btn--ghost:hover {
+  background: var(--surface-2);
+  border-color: var(--ink-3);
+}
+
+.field--check label.check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 14px;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.field input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  accent-color: var(--ink);
+}
+
+.field-row--3 {
+  grid-template-columns: 2fr 1fr 1fr;
+}
+
+.inline-form {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line-2);
+}
+
+table.plain th,
+table.plain td {
+  vertical-align: middle;
+}
+
+td.actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+td.actions form {
+  display: inline;
+  margin-left: 12px;
+}
+
+.deliveries {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+  font-size: 13px;
+}
+
+.deliveries li {
+  padding: 6px 0;
+  border-bottom: 1px solid var(--line-2);
 }
 
 .lang button {
@@ -1566,9 +1730,14 @@ fieldset.field legend {
 
   .planner,
   .compare,
-  .tariff {
+  .tariff,
+  .profile {
     grid-template-columns: 1fr;
     gap: 28px;
+  }
+
+  .field-row--3 {
+    grid-template-columns: 1fr;
   }
 
   .duel {

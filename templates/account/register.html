@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% block title %}{% translate "Create account" %} · Energy Clock{% endblock %}
+{% block content %}
+<section class="auth">
+  <h1>{% translate "Create account" %}</h1>
+  <p class="lead">{% translate "An account keeps your household profile, your own appliances and email alerts about cheap or clean hours." %}</p>
+  <form method="post" action="{% url 'web:register' %}" novalidate>
+    {% csrf_token %}
+    {% for error in form.non_field_errors %}<p class="error">{{ error }}</p>{% endfor %}
+    {% include "partials/form_field.html" with field=form.email %}
+    {% include "partials/form_field.html" with field=form.password1 hint=_("At least 8 characters, not only digits, not too similar to your email.") %}
+    {% include "partials/form_field.html" with field=form.password2 %}
+    <button type="submit" class="btn btn--primary">{% translate "Create account" %}</button>
+  </form>
+  <p class="muted auth-switch">{% translate "Already registered?" %} <a href="{% url 'web:login' %}">{% translate "Sign in" %}</a></p>
+</section>
+{% endblock %}

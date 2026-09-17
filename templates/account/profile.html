@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% load i18n energy %}
+{% block title %}{% translate "Account" %} · Energy Clock{% endblock %}
+{% block content %}
+<div class="profile">
+  <section class="profile-household">
+    <h1>{% translate "Your household" %}</h1>
+    <p class="lead">{{ user.email }}</p>
+    <form method="post" action="{% url 'web:profile' %}" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="form" value="household">
+      {% include "partials/form_field.html" with field=household_form.contracted_power_kw %}
+      <div class="field-row">
+        {% include "partials/form_field.html" with field=household_form.pv_peak_kw %}
+        {% include "partials/form_field.html" with field=household_form.storage_kwh %}
+      </div>
+      {% include "partials/form_field.html" with field=household_form.tariff_fixed_pln_kwh hint=_("Used to prefill the tariff calculator.") %}
+      {% include "partials/form_field.html" with field=household_form.language %}
+      {% include "partials/form_field.html" with field=household_form.prefers_green %}
+      <button type="submit" class="btn btn--primary">{% translate "Save household" %}</button>
+    </form>
+    <form method="post" action="{% url 'web:logout' %}" class="signout">
+      {% csrf_token %}
+      <button type="submit" class="btn btn--ghost">{% translate "Sign out" %}</button>
+    </form>
+  </section>
+
+  <section class="profile-lists">
+    <h2>{% translate "Your appliances" %}</h2>
+    <p class="muted">{% translate "They appear in the planner and in the cheap vs. clean comparison next to the built-in templates." %}</p>
+    {% if appliances %}
+    <div class="table-scroll">
+      <table class="num plain">
+        <thead><tr><th scope="col">{% translate "Name" %}</th><th scope="col">{% translate "Cycle" %}</th><th scope="col">{% translate "Power" %}</th><th scope="col">{% translate "Interruptible" %}</th><th scope="col"></th></tr></thead>
+        <tbody>
+          {% for appliance in appliances %}
+          <tr>
+            <td>{{ appliance.name }}</td>
+            <td>{{ appliance.duration_minutes|duration }}</td>
+            <td>{{ appliance.power_kw }} kW</td>
+            <td>{% if appliance.is_interruptible %}{% translate "yes" %}{% else %}{% translate "no" %}{% endif %}</td>
+            <td class="actions"><form method="post" action="{% url 'web:delete_appliance' appliance.pk %}">{% csrf_token %}<button type="submit" class="linklike">{% translate "Remove" %}</button></form></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    <form method="post" action="{% url 'web:profile' %}" class="inline-form" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="form" value="appliance">
+      <div class="field-row field-row--3">
+        {% include "partials/form_field.html" with field=appliance_form.name %}
+        {% include "partials/form_field.html" with field=appliance_form.duration_minutes %}
+        {% include "partials/form_field.html" with field=appliance_form.power_kw %}
+      </div>
+      {% include "partials/form_field.html" with field=appliance_form.is_interruptible %}
+      <button type="submit" class="btn">{% translate "Add appliance" %}</button>
+    </form>
+
+    <h2>{% translate "Email alerts" %}</h2>
+    <p class="muted">{% translate "Checked once a day right after PSE publishes tomorrow's prices. Each alert fires at most once per day." %}</p>
+    {% if alerts %}
+    <div class="table-scroll">
+      <table class="num plain">
+        <thead><tr><th scope="col">{% translate "Alert" %}</th><th scope="col">{% translate "Threshold" %}</th><th scope="col">{% translate "Status" %}</th><th scope="col">{% translate "Last sent" %}</th><th scope="col"></th></tr></thead>
+        <tbody>
+          {% for alert in alerts %}
+          <tr{% if not alert.is_active %} class="incomplete"{% endif %}>
+            <td>{{ alert.get_kind_display }}</td>
+            <td>{% if alert.kind == "PRICE_BELOW" %}{{ alert.threshold|money:0 }} PLN/MWh{% elif alert.kind == "GREEN_WINDOW" %}≥ {{ alert.threshold|money:0 }} % {% translate "RES" %}{% else %}–{% endif %}</td>
+            <td>{% if alert.is_active %}{% translate "active" %}{% else %}{% translate "paused" %}{% endif %}</td>
+            <td>{% if alert.last_fired_at %}{{ alert.last_fired_at|local_dt }}{% else %}–{% endif %}</td>
+            <td class="actions">
+              <form method="post" action="{% url 'web:toggle_alert' alert.pk %}">{% csrf_token %}<button type="submit" class="linklike">{% if alert.is_active %}{% translate "Pause" %}{% else %}{% translate "Enable" %}{% endif %}</button></form>
+              <form method="post" action="{% url 'web:delete_alert' alert.pk %}">{% csrf_token %}<button type="submit" class="linklike">{% translate "Remove" %}</button></form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% endif %}
+    <form method="post" action="{% url 'web:profile' %}" class="inline-form" novalidate>
+      {% csrf_token %}
+      <input type="hidden" name="form" value="alert">
+      <div class="field-row">
+        {% include "partials/form_field.html" with field=alert_form.kind %}
+        {% include "partials/form_field.html" with field=alert_form.threshold hint=_("PLN/MWh for the price alert, percent of renewables for the clean window; leave empty for negative prices.") %}
+      </div>
+      <button type="submit" class="btn">{% translate "Add alert" %}</button>
+    </form>
+
+    {% if deliveries %}
+    <h2>{% translate "Recently sent" %}</h2>
+    <ul class="deliveries">
+      {% for delivery in deliveries %}
+      <li><span class="num">{{ delivery.sent_at|local_dt }}</span> · {{ delivery.subject }}</li>
+      {% endfor %}
+    </ul>
+    <p class="muted">{% blocktranslate trimmed %}In this demo every email lands in the local Mailpit inbox at <a href="http://127.0.0.1:8025">127.0.0.1:8025</a>.{% endblocktranslate %}</p>
+    {% endif %}
+  </section>
+</div>
+{% endblock %}

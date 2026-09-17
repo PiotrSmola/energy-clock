@@ -13,10 +13,7 @@
       <div class="field">
         <label for="id_appliance">{% translate "Appliance" %}</label>
         <select name="appliance" id="id_appliance" x-model="preset" @change="applyPreset()">
-          <option value="">{% translate "Custom appliance" %}</option>
-          {% for appliance in appliances %}
-          <option value="{{ appliance.pk }}"{% if form.appliance.value|stringformat:"s" == appliance.pk|stringformat:"s" %} selected{% endif %}>{{ appliance.display_name }} · {{ appliance.duration_minutes|duration }} · {{ appliance.power_kw }} kW</option>
-          {% endfor %}
+          {% include "web/partials/appliance_options.html" with selected=form.appliance.value %}
         </select>
       </div>
       <div class="field-row">

@@ -3,10 +3,11 @@ from decimal import Decimal
 from typing import Any
 
 from django import forms
+from django.contrib.auth.models import AbstractBaseUser, AnonymousUser
 from django.utils.translation import gettext_lazy as _
 
 from apps.market.timeutils import WARSAW, to_local
-from apps.planner.models import Appliance
+from apps.planner.models import Appliance, appliances_for
 from apps.planner.services import PlanRequest
 from apps.planner.tariff import DailyProfile, builtin_profiles, custom_profile
 
@@ -50,6 +51,17 @@ class PlannerForm(forms.Form):
         label=_("Must finish by"),
         widget=forms.TimeInput(attrs={"type": "time"}, format="%H:%M"),
     )
+
+    def __init__(
+        self,
+        *args: Any,
+        user: AbstractBaseUser | AnonymousUser | None = None,
+        **kwargs: Any,
+    ) -> None:
+        super().__init__(*args, **kwargs)
+        appliance_field = self.fields["appliance"]
+        if isinstance(appliance_field, TemplateChoiceField):
+            appliance_field.queryset = appliances_for(user)
 
     def clean(self) -> dict[str, Any]:
         data: dict[str, Any] = super().clean() or {}

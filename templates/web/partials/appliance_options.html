@@ -1,0 +1,14 @@
+{% load i18n energy %}
+<option value="">{% translate "Custom appliance" %}</option>
+{% if own_appliances %}
+<optgroup label="{% translate 'Your appliances' %}">
+  {% for appliance in own_appliances %}
+  <option value="{{ appliance.pk }}"{% if selected|stringformat:"s" == appliance.pk|stringformat:"s" %} selected{% endif %}>{{ appliance.display_name }} · {{ appliance.duration_minutes|duration }} · {{ appliance.power_kw }} kW</option>
+  {% endfor %}
+</optgroup>
+{% endif %}
+<optgroup label="{% translate 'Templates' %}">
+  {% for appliance in system_appliances %}
+  <option value="{{ appliance.pk }}"{% if selected|stringformat:"s" == appliance.pk|stringformat:"s" %} selected{% endif %}>{{ appliance.display_name }} · {{ appliance.duration_minutes|duration }} · {{ appliance.power_kw }} kW</option>
+  {% endfor %}
+</optgroup>
