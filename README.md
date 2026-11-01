@@ -7,7 +7,7 @@ shows today's and tomorrow's prices as a clock, and answers one question for a c
 appliance: *start it at 14:45 instead of now and you will pay 0.71 PLN less*. It also shows
 when the grid is cleanest, because the cheapest hour is not always the greenest one.
 
-![Energy Clock widget](http://127.0.0.1:8000/widget.svg)
+![Energy Clock price clock with today's 15-minute prices](docs/screenshots/home.png)
 
 - Live price clock with the cheapest and most expensive windows of the day
 - Appliance planner: cheapest start for a given cycle length and power draw, with constraints
@@ -20,6 +20,41 @@ when the grid is cleanest, because the cheapest hour is not always the greenest 
 - Accounts with a household profile, own appliances and email alerts
 - Embeddable widget, SVG badge, CSV export and a small JSON API
 - English by default, Polish via the header switch; light and dark theme
+
+## Screenshots
+
+Taken from a local instance with the full PSE history (14 June 2024 – 2 November 2026).
+
+**Appliance planner**: a washing machine that has to finish by 07:00 starts at 02:30
+tomorrow and costs 28 % less than starting now.
+
+![Appliance planner](docs/screenshots/planner.png)
+
+**Cheap vs. clean**: the cheapest and the cleanest two-hour window of the day, with the
+price of choosing the cleaner one.
+
+![Cheap vs. clean comparison](docs/screenshots/compare.png)
+
+**Generation mix**: planned solar, wind and conventional generation with the estimated
+carbon intensity on the right axis.
+
+![Generation mix](docs/screenshots/mix.png)
+
+**Tariff calculator**: the last twelve months replayed on a dynamic tariff against a
+fixed price.
+
+![Tariff calculator](docs/screenshots/tariff.png)
+
+**Market statistics** computed by the database over the whole history.
+
+![Market statistics](docs/screenshots/stats.png)
+
+<table>
+  <tr>
+    <td width="66%"><strong>Dark theme</strong><br><img src="docs/screenshots/home-dark.png" alt="Price clock in the dark theme"></td>
+    <td width="34%"><strong>Phone, hourly chart</strong><br><img src="docs/screenshots/home-mobile.png" alt="Price clock on a 390 px wide screen"></td>
+  </tr>
+</table>
 
 ## Who it is for
 
@@ -123,8 +158,13 @@ Requirements: Docker Desktop with the Compose plugin. Nothing is installed on th
 ```powershell
 ./make.ps1 up        # redis + mailpit
 ./make.ps1 migrate
+./make.ps1 backfill  # optional: download the price history (a few minutes)
 ./make.ps1 dev       # web on http://127.0.0.1:8000, worker, beat
 ```
+
+A `.env` file is optional. Without it the development defaults apply; to set your own
+`DJANGO_SECRET_KEY`, copy `.env.example` to `.env` and fill it in. Empty values fall back
+to the defaults. `.env` is ignored by git.
 
 Useful addresses: application `http://127.0.0.1:8000`, Mailpit `http://127.0.0.1:8025`,
 admin `http://127.0.0.1:8000/admin/` (create a superuser with `./make.ps1 super`).
@@ -168,6 +208,10 @@ history from 14 June 2024 is roughly 80 000 price intervals and takes a few minu
 
 All money values are strings to preserve decimals; timestamps are ISO 8601 in UTC and in
 Europe/Warsaw.
+
+The widget, as it looks inside an `<iframe>`:
+
+![Embeddable widget](docs/screenshots/widget.png)
 
 ## Development notes
 
