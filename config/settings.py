@@ -11,13 +11,19 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 load_dotenv(BASE_DIR / ".env")
 
-SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY", "insecure-development-key")
 
-DEBUG = os.environ.get("DJANGO_DEBUG", "0") == "1"
+def env(name: str, default: str) -> str:
+    # compose passes ${VAR} as an empty string when it is not set; treat that as unset
+    return os.environ.get(name) or default
+
+
+SECRET_KEY = env("DJANGO_SECRET_KEY", "insecure-development-key")
+
+DEBUG = env("DJANGO_DEBUG", "0") == "1"
 
 ALLOWED_HOSTS = [
     host.strip()
-    for host in os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,web").split(",")
+    for host in env("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,web").split(",")
     if host.strip()
 ]
 
@@ -124,7 +130,7 @@ WHITENOISE_AUTOREFRESH = DEBUG
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-REDIS_URL = os.environ.get("REDIS_URL", "redis://redis:6379/0")
+REDIS_URL = env("REDIS_URL", "redis://redis:6379/0")
 
 CACHES = {
     "default": {
@@ -150,7 +156,7 @@ CELERY_TASK_TRACK_STARTED = True
 
 CELERY_TASK_TIME_LIMIT = 15 * 60
 
-CELERY_TASK_ALWAYS_EAGER = os.environ.get("CELERY_TASK_ALWAYS_EAGER", "0") == "1"
+CELERY_TASK_ALWAYS_EAGER = env("CELERY_TASK_ALWAYS_EAGER", "0") == "1"
 
 CELERY_BEAT_SCHEDULE = {
     "fetch-tomorrow-prices": {
@@ -174,17 +180,17 @@ CELERY_BEAT_SCHEDULE = {
 
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 
-EMAIL_HOST = os.environ.get("EMAIL_HOST", "mailpit")
+EMAIL_HOST = env("EMAIL_HOST", "mailpit")
 
-EMAIL_PORT = int(os.environ.get("EMAIL_PORT", "1025"))
+EMAIL_PORT = int(env("EMAIL_PORT", "1025"))
 
 EMAIL_USE_TLS = False
 
 DEFAULT_FROM_EMAIL = "Energy Clock <alerts@energy-clock.local>"
 
-PSE_API_BASE = os.environ.get("PSE_API_BASE", "https://api.raporty.pse.pl/api")
+PSE_API_BASE = env("PSE_API_BASE", "https://api.raporty.pse.pl/api")
 
-SITE_URL = os.environ.get("SITE_URL", "http://127.0.0.1:8000")
+SITE_URL = env("SITE_URL", "http://127.0.0.1:8000")
 
 LOGIN_URL = "/account/login"
 
