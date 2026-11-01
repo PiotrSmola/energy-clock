@@ -114,6 +114,36 @@ def test_compare_result_partial_uses_upcoming_horizon(client: Client, two_days: 
 
 
 @time_machine.travel(NOON_SEPT_4, tick=False)
+def test_compare_when_cheapest_window_has_no_plan_yet_says_so(client: Client) -> None:
+    seed_market_day(date(2026, 9, 4))
+    seed_market_day(date(2026, 9, 5), with_generation=False)
+
+    body = client.get(
+        reverse("web:compare"), {"appliance": "", "duration_minutes": "120", "power_kw": "2.0"}
+    ).content.decode()
+
+    assert "The cleaner window costs" in body
+    assert "carbon footprints cannot be compared" in body
+    assert "None" not in body
+    assert "≈  kg" not in body
+
+
+@time_machine.travel(NOON_SEPT_4, tick=False)
+def test_compare_with_free_cheapest_window_omits_cost_percent(client: Client) -> None:
+    seed_market_day(date(2026, 9, 4))
+    PricePoint.objects.filter(business_date=date(2026, 9, 4), dtime_utc__hour__gte=20).update(
+        price_pln_mwh=Decimal("-50")
+    )
+
+    body = client.get(
+        reverse("web:compare"), {"appliance": "", "duration_minutes": "60", "power_kw": "2.0"}
+    ).content.decode()
+
+    assert "The cleaner window costs" in body
+    assert "None" not in body
+
+
+@time_machine.travel(NOON_SEPT_4, tick=False)
 def test_compare_without_generation_data_explains_missing_clean_ranking(client: Client) -> None:
     seed_market_day(date(2026, 9, 4), with_generation=False)
 

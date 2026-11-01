@@ -20,9 +20,28 @@
         Today cheap and clean coincide: {{ start }}–{{ end }} is both the cheapest and the cleanest window.
       {% endblocktranslate %}</p>
     {% else %}
-      <p class="verdict">{% blocktranslate trimmed with extra=comparison.extra_cost_pln|money percent=comparison.extra_cost_percent saved=comparison.carbon_saved_g|grams_to_kg saved_percent=comparison.carbon_saved_percent %}
-        The cleaner window costs <strong>{{ extra }} PLN</strong> more (+{{ percent }} %) and avoids <strong>≈ {{ saved }} kg CO₂</strong> ({{ saved_percent }} % less).
-      {% endblocktranslate %}</p>
+      <p class="verdict">
+        {% if comparison.extra_cost_percent is not None %}
+          {% blocktranslate trimmed with extra=comparison.extra_cost_pln|money percent=comparison.extra_cost_percent %}
+            The cleaner window costs <strong>{{ extra }} PLN</strong> more (+{{ percent }} %).
+          {% endblocktranslate %}
+        {% else %}
+          {% blocktranslate trimmed with extra=comparison.extra_cost_pln|money %}
+            The cleaner window costs <strong>{{ extra }} PLN</strong> more.
+          {% endblocktranslate %}
+        {% endif %}
+        {% if comparison.carbon_saved_g is None %}
+          {% translate "The cheapest window has no generation plan yet, so the carbon footprints cannot be compared." %}
+        {% elif comparison.carbon_saved_percent is not None %}
+          {% blocktranslate trimmed with saved=comparison.carbon_saved_g|grams_to_kg saved_percent=comparison.carbon_saved_percent %}
+            It avoids <strong>≈ {{ saved }} kg CO₂</strong> ({{ saved_percent }} % less).
+          {% endblocktranslate %}
+        {% else %}
+          {% blocktranslate trimmed with saved=comparison.carbon_saved_g|grams_to_kg %}
+            It avoids <strong>≈ {{ saved }} kg CO₂</strong>.
+          {% endblocktranslate %}
+        {% endif %}
+      </p>
     {% endif %}
 
     <div class="duel">

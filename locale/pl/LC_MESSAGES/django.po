@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Energy Clock\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-09-17 12:59+0200\n"
+"POT-Creation-Date: 2026-11-01 15:14+0100\n"
 "PO-Revision-Date: 2026-09-10 08:40+0200\n"
 "Last-Translator: Energy Clock\n"
 "Language-Team: pl\n"
@@ -610,12 +610,31 @@ msgstr ""
 #, python-format
 msgid ""
 "The cleaner window costs <strong>%(extra)s PLN</strong> more (+%(percent)s "
-"%%) and avoids <strong>≈ %(saved)s kg CO₂</strong> (%(saved_percent)s %% "
-"less)."
+"%%)."
 msgstr ""
 "Czystsze okno kosztuje o <strong>%(extra)s PLN</strong> więcej (+%(percent)s "
-"%%) i oszczędza <strong>≈ %(saved)s kg CO₂</strong> (o %(saved_percent)s %% "
-"mniej)."
+"%%)."
+
+#, python-format
+msgid "The cleaner window costs <strong>%(extra)s PLN</strong> more."
+msgstr "Czystsze okno kosztuje o <strong>%(extra)s PLN</strong> więcej."
+
+msgid ""
+"The cheapest window has no generation plan yet, so the carbon footprints "
+"cannot be compared."
+msgstr ""
+"Dla najtańszego okna nie ma jeszcze planu generacji, więc nie da się "
+"porównać śladu węglowego."
+
+#, python-format
+msgid ""
+"It avoids <strong>≈ %(saved)s kg CO₂</strong> (%(saved_percent)s %% less)."
+msgstr ""
+"Oszczędza <strong>≈ %(saved)s kg CO₂</strong> (o %(saved_percent)s %% mniej)."
+
+#, python-format
+msgid "It avoids <strong>≈ %(saved)s kg CO₂</strong>."
+msgstr "Oszczędza <strong>≈ %(saved)s kg CO₂</strong>."
 
 msgid "Cheapest"
 msgstr "Najtaniej"
