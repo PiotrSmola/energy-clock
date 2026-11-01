@@ -26,6 +26,21 @@ installations, and anyone curious how much the price of electricity moves during
 It is a portfolio project: the goal is a small, complete, well-tested Django application
 with a real data pipeline, not a commercial product.
 
+## Tech stack
+
+| Area | Technology |
+|---|---|
+| Language | Python 3.13 |
+| Web framework | Django 5.2, server-rendered templates, gettext translations (English, Polish) |
+| Frontend | HTMX 2.0 and Alpine.js 3.17 (vendored, no build step), one CSS file, SVG charts rendered in Python, Bricolage Grotesque (self-hosted) |
+| Background jobs | Celery 5.6, django-celery-beat (schedule stored in the database), django-celery-results |
+| Storage and cache | SQLite in WAL mode; Redis 8 as the Celery broker and the Django cache |
+| External data | PSE reports API, fetched with `httpx` |
+| Static files and mail | WhiteNoise; SMTP to a local Mailpit inbox |
+| Tests | pytest, pytest-django, time-machine, respx |
+| Code quality | ruff, mypy `--strict` with django-stubs |
+| Environment | Docker Compose (web, worker, beat, Redis, Mailpit), `make.ps1` task runner |
+
 ## Architecture
 
 ```
@@ -174,8 +189,7 @@ Europe/Warsaw.
 
 ## Development notes
 
-- Python 3.13, Django 5.2, Celery 5.6, `httpx`, `Decimal` everywhere money or power is
-  involved, `mypy --strict`, `ruff`.
+- `Decimal` everywhere money or power is involved.
 - Tests use fixtures with real PSE data for 4 and 5 September 2026 and never touch the
   network; `time-machine` freezes the clock.
 - Translations: `python manage.py makemessages -l pl` and `compilemessages` (gettext is in
