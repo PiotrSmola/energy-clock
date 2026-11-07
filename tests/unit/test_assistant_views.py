@@ -1,6 +1,9 @@
 import json
+import re
+from html import unescape
 from io import StringIO
 from typing import Any
+from urllib.parse import parse_qs, urlsplit
 
 import httpx
 import pytest
@@ -501,3 +504,111 @@ def test_ingest_law_command_turns_an_empty_parse_into_a_command_error_and_keeps_
         call_command("ingest_law")
 
     assert LawChunk.objects.filter(pk=source_chunk.pk).exists()
+
+
+def example_links(html: str) -> list[dict[str, str]]:
+    links: list[dict[str, str]] = []
+    for match in re.finditer(r'<a class="example"(.*?)>(.*?)</a>', html, re.DOTALL):
+        attributes = {
+            name: unescape(value)
+            for name, value in re.findall(r'([\w:-]+)="(.*?)"', match.group(1), re.DOTALL)
+        }
+        attributes["text"] = unescape(match.group(2))
+        links.append(attributes)
+    return links
+
+
+def thinking_block(html: str) -> str:
+    match = re.search(
+        r'<div class="thinking" role="status">(.*?)</div>\s*<section', html, re.DOTALL
+    )
+    assert match is not None
+    return match.group(1)
+
+
+@pytest.mark.parametrize(
+    ("language", "text"),
+    [
+        ("en", "The assistant is preparing an answer…"),
+        ("pl", "Asystent przygotowuje odpowiedź…"),
+    ],
+)
+def test_page_has_the_preparing_indicator_with_bar_and_text(
+    client: Client, language: str, text: str
+) -> None:
+    client.cookies["energy_clock_language"] = language
+
+    html = client.get(reverse("assistant:assistant")).content.decode()
+
+    assert '<div id="assistant-output" class="assistant-output">' in html
+    block = thinking_block(html)
+    assert '<div class="panel-progress" aria-hidden="true"></div>' in block
+    assert text in block
+    assert "model" not in block.lower()
+    assert "modelu" not in block.lower()
+
+
+def test_indicator_is_outside_the_result_section_and_the_partial_has_none(
+    client: Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    patch_ask(monkeypatch)
+    page = client.get(reverse("assistant:assistant"), {"q": "Hej"}).content.decode()
+    partial = client.get(reverse("assistant:answer"), {"q": "Hej"}).content.decode()
+
+    assert page.index('class="thinking"') < page.index('id="assistant-result"')
+    result_section = page.split('id="assistant-result"', 1)[1].split("</section>", 1)[0]
+    assert "thinking" not in result_section
+    assert "preparing an answer" not in result_section
+    assert "thinking" not in partial
+    assert "preparing an answer" not in partial
+    assert 'role="status"' not in partial
+
+
+def test_form_is_wired_to_the_indicator_and_disables_the_button(client: Client) -> None:
+    html = client.get(reverse("assistant:assistant")).content.decode()
+
+    form = re.search(r'<form class="assistant-form"(.*?)>', html, re.DOTALL)
+    assert form is not None
+    attributes = dict(re.findall(r'([\w:-]+)="(.*?)"', form.group(1), re.DOTALL))
+    assert attributes["hx-get"] == reverse("assistant:answer")
+    assert attributes["hx-target"] == "#assistant-result"
+    assert attributes["hx-indicator"] == "#assistant-output"
+    assert attributes["hx-sync"] == "#assistant-output:replace"
+    assert attributes["hx-disabled-elt"] == "find button"
+    assert "scrollIntoView" in attributes["hx-on::before-request"]
+    assert "assistant-output" in attributes["hx-on::before-request"]
+
+
+def test_example_links_keep_a_plain_href_and_use_htmx_with_the_same_question(
+    client: Client,
+) -> None:
+    html = client.get(reverse("assistant:assistant")).content.decode()
+
+    links = example_links(html)
+
+    assert len(links) == len(views.EXAMPLE_QUESTIONS) == 4
+    for link in links:
+        href_query = parse_qs(urlsplit(link["href"]).query)["q"][0]
+        get_query = parse_qs(urlsplit(link["hx-get"]).query)["q"][0]
+        assert urlsplit(link["href"]).path == reverse("assistant:assistant")
+        assert urlsplit(link["hx-get"]).path == reverse("assistant:answer")
+        assert href_query == get_query == link["data-question"] == link["text"]
+        assert link["hx-target"] == "#assistant-result"
+        assert link["hx-indicator"] == "#assistant-output"
+        assert link["hx-sync"] == "#assistant-output:replace"
+        assert link["hx-disabled-elt"] == ".assistant-form button"
+        assert "id_q" in link["hx-on::before-request"]
+        assert "dataset.question" in link["hx-on::before-request"]
+        assert "scrollIntoView" in link["hx-on::before-request"]
+
+
+def test_polish_examples_carry_the_polish_question_in_every_attribute(client: Client) -> None:
+    client.cookies["energy_clock_language"] = "pl"
+
+    links = example_links(client.get(reverse("assistant:assistant")).content.decode())
+
+    assert len(links) == 4
+    for link in links:
+        assert parse_qs(urlsplit(link["hx-get"]).query)["q"][0] == link["data-question"]
+        assert link["data-question"] == link["text"]
+    assert any("pralk" in link["text"].lower() for link in links)
