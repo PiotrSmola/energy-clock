@@ -7,7 +7,8 @@
   <p class="lead">{% translate "Ask in your own words. A local language model picks the right calculation or searches the Energy Law; the numbers come from the application, not from the model." %}</p>
   <form class="assistant-form" method="get" action="{% url 'assistant:assistant' %}"
         hx-get="{% url 'assistant:answer' %}" hx-target="#assistant-result" hx-swap="innerHTML transition:true"
-        hx-sync="this:replace" hx-indicator="#assistant-result">
+        hx-sync="#assistant-output:replace" hx-indicator="#assistant-output" hx-disabled-elt="find button"
+        hx-on::before-request="document.getElementById('assistant-output').scrollIntoView({block: 'nearest'})">
     <label class="sr-only" for="id_q">{% translate "Question" %}</label>
     <textarea name="q" id="id_q" rows="3" maxlength="{{ max_question_chars }}" required
               placeholder="{% translate 'For example: when should I run the dishwasher tonight?' %}">{{ question }}</textarea>
@@ -18,11 +19,21 @@
   </form>
   <ul class="examples" aria-label="{% translate 'Examples' %}">
     {% for example in examples %}
-    <li><a class="example" href="{% url 'assistant:assistant' %}?q={{ example|urlencode }}">{{ example }}</a></li>
+    <li><a class="example" href="{% url 'assistant:assistant' %}?q={{ example|urlencode }}"
+           hx-get="{% url 'assistant:answer' %}?q={{ example|urlencode }}" hx-target="#assistant-result"
+           hx-swap="innerHTML transition:true" hx-sync="#assistant-output:replace" hx-indicator="#assistant-output"
+           hx-disabled-elt=".assistant-form button" data-question="{{ example }}"
+           hx-on::before-request="document.getElementById('id_q').value = this.dataset.question; document.getElementById('assistant-output').scrollIntoView({block: 'nearest'})">{{ example }}</a></li>
     {% endfor %}
   </ul>
-  <section id="assistant-result" class="assistant-result" aria-live="polite">
-    {% include "assistant/partials/answer.html" %}
-  </section>
+  <div id="assistant-output" class="assistant-output">
+    <div class="thinking" role="status">
+      <div class="panel-progress" aria-hidden="true"></div>
+      <p class="thinking-title">{% translate "The assistant is preparing an answer…" %}</p>
+    </div>
+    <section id="assistant-result" class="assistant-result" aria-live="polite">
+      {% include "assistant/partials/answer.html" %}
+    </section>
+  </div>
 </div>
 {% endblock %}

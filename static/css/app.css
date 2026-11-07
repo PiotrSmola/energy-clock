@@ -1945,10 +1945,45 @@ fieldset.field legend {
   color: var(--ink);
 }
 
-.assistant-result {
+.assistant-output {
   position: relative;
   margin-top: 30px;
   min-height: 60px;
+  scroll-margin-bottom: 24px;
+}
+
+.assistant-result {
+  position: relative;
+}
+
+.thinking {
+  display: none;
+  position: relative;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-2);
+}
+
+.thinking .panel-progress {
+  top: -1px;
+  bottom: auto;
+}
+
+.assistant-output.htmx-request .thinking {
+  display: block;
+}
+
+.assistant-output.htmx-request .assistant-result {
+  display: none;
+}
+
+.thinking-title {
+  font-size: 16px;
+  color: var(--ink-2);
+}
+
+.assistant-form button[disabled] {
+  opacity: 0.55;
+  cursor: progress;
 }
 
 .assistant-result .panel-progress {

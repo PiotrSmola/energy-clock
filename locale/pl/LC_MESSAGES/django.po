@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Energy Clock\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-11-07 18:05+0100\n"
+"POT-Creation-Date: 2026-11-07 18:19+0100\n"
 "PO-Revision-Date: 2026-09-10 08:40+0200\n"
 "Last-Translator: Energy Clock\n"
 "Language-Team: pl\n"
@@ -444,6 +444,9 @@ msgstr "Zapytaj"
 
 msgid "Examples"
 msgstr "Przykłady"
+
+msgid "The assistant is preparing an answer…"
+msgstr "Asystent przygotowuje odpowiedź…"
 
 msgid "The language model is not reachable."
 msgstr "Model językowy jest niedostępny."
