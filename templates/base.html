@@ -32,6 +32,7 @@
       <a href="{% url 'web:mix' %}"{% if nav == 'mix' %} aria-current="page"{% endif %}>{% translate "Generation mix" %}</a>
       <a href="{% url 'web:tariff' %}"{% if nav == 'tariff' %} aria-current="page"{% endif %}>{% translate "Tariff" %}</a>
       <a href="{% url 'web:stats' %}"{% if nav == 'stats' %} aria-current="page"{% endif %}>{% translate "Statistics" %}</a>
+      <a href="{% url 'assistant:assistant' %}"{% if nav == 'assistant' %} aria-current="page"{% endif %}>{% translate "Assistant" %}</a>
     </nav>
     <div class="account">
       {% if user.is_authenticated %}
