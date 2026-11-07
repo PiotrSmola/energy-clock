@@ -15,6 +15,7 @@ from apps.assistant.law import (
     parse_articles,
     search,
     split_long,
+    stems,
     unpack,
 )
 from apps.assistant.llm import LlmError
@@ -328,3 +329,119 @@ def test_search_with_a_different_embedding_dimension_raises_law_index_error() ->
 
     with pytest.raises(LawIndexError, match="different embedding model"):
         search("taryfa", client)
+
+
+def test_stems_share_the_stem_of_inflected_polish_words() -> None:
+    assert stems("dynamicznej") == stems("dynamiczną") == {"dynami"}
+    assert stems("sprzedawcy sprzedawcę") == {"sprzed"}
+    assert stems("Umowa UMOWA umowa") == {"umowa"}
+
+
+def test_stems_drop_short_words_but_keep_numbers() -> None:
+    assert stems("to jest w art 5") == {"jest", "5"}
+    assert stems("co najmniej 200 000 odbiorców") == {"najmni", "200", "000", "odbior"}
+    assert stems("") == set()
+
+
+def add_text_chunk(position: int, text: str, vector: list[float]) -> LawChunk:
+    return LawChunk.objects.create(
+        act=ACT,
+        act_title="Prawo energetyczne",
+        position=position,
+        article=str(position),
+        heading=f"Art. {position}",
+        text=text,
+        embedding=pack(vector),
+    )
+
+
+def seed_filler_chunks(count: int) -> list[LawChunk]:
+    """Chunks without any query keyword whose cosine to [1, 0, 0] falls with the position."""
+    return [
+        add_text_chunk(position, "przepis ogolny", [1.0, 0.05 * (position + 1), 0.0])
+        for position in range(count)
+    ]
+
+
+def query_axis() -> FakeLlm:
+    return FakeLlm(vectorize=lambda _text: [1.0, 0.0, 0.0])
+
+
+def test_search_lifts_a_chunk_with_rare_query_words_that_cosine_ranks_last() -> None:
+    fillers = seed_filler_chunks(11)
+    rare = add_text_chunk(11, "Oferta z cena dynamiczna dla odbiorcow", [0.0, 0.0, 1.0])
+
+    by_cosine = sorted([*fillers, rare], key=lambda chunk: -next(iter(unpack(chunk.embedding))))
+    results = search("cena dynamiczna", query_axis(), limit=3)
+
+    assert by_cosine[-1] == rare
+    assert rare in [chunk for chunk, _score in results]
+    assert len(results) == 3
+
+
+def test_search_keeps_a_strong_semantic_match_that_has_no_keywords() -> None:
+    fillers = seed_filler_chunks(11)
+    add_text_chunk(11, "Oferta z cena dynamiczna", [0.0, 0.0, 1.0])
+
+    results = search("cena dynamiczna", query_axis(), limit=2)
+
+    assert results[0][0] == fillers[0]
+    assert {chunk.position for chunk, _score in results} == {0, 11}
+
+
+def test_search_returns_the_cosine_not_the_fused_score() -> None:
+    seed_filler_chunks(11)
+    rare = add_text_chunk(11, "cena dynamiczna", [0.0, 0.0, 1.0])
+    add_text_chunk(12, "cena dynamiczna", [1.0, 1.0, 0.0])
+
+    results = search("cena dynamiczna", query_axis(), limit=20)
+
+    scores = {chunk.pk: score for chunk, score in results}
+    assert scores[rare.pk] == pytest.approx(0.0, abs=1e-6)
+    assert max(scores.values()) == pytest.approx(1.0, abs=0.02)
+    assert min(scores.values()) == pytest.approx(0.0, abs=1e-6)
+
+
+def test_chunks_without_keyword_overlap_keep_pure_cosine_order(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(law, "KEYWORD_WEIGHT", 100.0)
+    fillers = seed_filler_chunks(8)
+    keyword = add_text_chunk(8, "cena dynamiczna", [0.0, 0.0, 1.0])
+
+    results = [chunk for chunk, _score in search("cena dynamiczna", query_axis(), limit=20)]
+
+    assert results[0] == keyword
+    assert results[1:] == fillers
+
+
+def test_search_without_any_keyword_match_is_pure_dense_ranking() -> None:
+    fillers = seed_filler_chunks(6)
+
+    results = [chunk for chunk, _score in search("zupelnie inne slowa", query_axis(), limit=20)]
+
+    assert results == fillers
+
+
+def test_search_respects_the_limit_and_returns_each_chunk_once() -> None:
+    seed_filler_chunks(5)
+    add_text_chunk(5, "cena dynamiczna", [0.0, 0.0, 1.0])
+
+    assert len(search("cena dynamiczna", query_axis(), limit=2)) == 2
+    everything = search("cena dynamiczna", query_axis(), limit=50)
+    assert len({chunk.pk for chunk, _score in everything}) == len(everything) == 6
+
+
+def test_a_rarer_query_word_weighs_more_than_a_common_one(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # same cosine for all chunks; a dominant keyword weight isolates the keyword ranking
+    monkeypatch.setattr(law, "KEYWORD_WEIGHT", 100.0)
+    common_only = add_text_chunk(0, "umowa sprzedazy", [0.0, 0.0, 1.0])
+    rare_only = add_text_chunk(1, "odbiorca wrazliwy", [0.0, 0.0, 1.0])
+    for position in range(2, 8):
+        add_text_chunk(position, "umowa kompleksowa", [0.0, 0.0, 1.0])
+
+    results = [chunk for chunk, _score in search("umowa wrazliwy", query_axis(), limit=20)]
+
+    assert results.index(rare_only) < results.index(common_only)

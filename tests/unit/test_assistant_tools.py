@@ -326,12 +326,15 @@ def test_search_energy_law_returns_ranked_articles_and_sources() -> None:
     assert outcome.sources == [tariffs, meters]
 
 
-def test_search_energy_law_truncates_long_texts() -> None:
-    add_chunk(0, "45", [1.0, 0.0, 0.0], text="a" * (tools.MAX_LAW_TEXT_CHARS + 500))
+def test_search_energy_law_sends_the_full_chunk_text_to_the_model() -> None:
+    long_text = " ".join(f"zdanie{number}" for number in range(1000))
+    assert len(long_text) > 2400
+    add_chunk(0, "45", [1.0, 0.0, 0.0], text=long_text)
 
     outcome = call("search_energy_law", {"query": "taryfa"})
 
-    assert len(outcome.result["results"][0]["text"]) == tools.MAX_LAW_TEXT_CHARS
+    assert outcome.result["results"][0]["text"] == long_text
+    assert not hasattr(tools, "MAX_LAW_TEXT_CHARS")
 
 
 def test_search_energy_law_with_an_empty_index_points_to_ingest_law() -> None:
