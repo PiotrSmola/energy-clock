@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "apps.market",
     "apps.planner",
     "apps.web",
+    "apps.assistant",
 ]
 
 MIDDLEWARE = [
@@ -189,6 +190,22 @@ EMAIL_USE_TLS = False
 DEFAULT_FROM_EMAIL = "Energy Clock <alerts@energy-clock.local>"
 
 PSE_API_BASE = env("PSE_API_BASE", "https://api.raporty.pse.pl/api")
+
+ELI_API_BASE = env("ELI_API_BASE", "https://api.sejm.gov.pl/eli")
+
+# any OpenAI-compatible server; the default is LM Studio on the host machine
+LLM_BASE_URL = env("LLM_BASE_URL", "http://host.docker.internal:1234/v1")
+
+LLM_API_KEY = env("LLM_API_KEY", "lm-studio")
+
+LLM_MODEL = env("LLM_MODEL", "google/gemma-4-12b-qat")
+
+LLM_EMBEDDING_MODEL = env("LLM_EMBEDDING_MODEL", "text-embedding-bge-m3")
+
+# "none" turns thinking off on LM Studio; "omit" leaves the parameter out for servers without it
+LLM_REASONING_EFFORT = env("LLM_REASONING_EFFORT", "none")
+
+LLM_TIMEOUT_SECONDS = float(env("LLM_TIMEOUT_SECONDS", "90"))
 
 SITE_URL = env("SITE_URL", "http://127.0.0.1:8000")
 

@@ -93,6 +93,15 @@ def load_price_slots(start_utc: datetime, end_utc: datetime | None = None) -> li
     ]
 
 
+def tariff_slots(start: date, end: date) -> list[PriceSlot]:
+    return [
+        PriceSlot(start_utc=dtime_utc - INTERVAL, price_pln_mwh=price)
+        for dtime_utc, price in PricePoint.objects.filter(business_date__range=(start, end))
+        .order_by("dtime_utc")
+        .values_list("dtime_utc", "price_pln_mwh")
+    ]
+
+
 def carbon_slots(slots: list[PriceSlot]) -> list[CarbonSlot]:
     return [CarbonSlot(start_utc=slot.start_utc, carbon_g_kwh=slot.carbon_g_kwh) for slot in slots]
 

@@ -21,6 +21,7 @@ switch ($Task) {
     "format"   { Web ruff format . }
     "types"    { Web mypy . }
     "backfill" { Dc run --rm web python manage.py backfill }
+    "law"      { Dc run --rm web python manage.py ingest_law }
     "ps"       { Dc ps }
     "mail"     { Start-Process "http://127.0.0.1:8025" }
     "verify"   { & "$PSScriptRoot/scripts/verify.ps1" }
@@ -42,7 +43,7 @@ switch ($Task) {
         Write-Host "  up down dev sh logs ps"
         Write-Host "  migrate makemig super shell"
         Write-Host "  test lint format types"
-        Write-Host "  backfill mail verify reset clean"
+        Write-Host "  backfill law mail verify reset clean"
         Write-Host ""
         Write-Host "Projekt Compose: energy-clock (wymuszony flaga -p)"
         Write-Host "Uzycie: ./make.ps1 dev   albo   make dev"

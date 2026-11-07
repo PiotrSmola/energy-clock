@@ -26,7 +26,6 @@ from apps.market.queries import (
 from apps.market.timeutils import INTERVAL, day_bounds_utc, to_local
 from apps.planner.forms import DEFAULT_HOURLY_SHAPE, HOURS, PlannerForm, TariffForm
 from apps.planner.models import Household, appliances_for
-from apps.planner.optimizer import PriceSlot
 from apps.planner.services import (
     REFERENCE_DURATION_MINUTES,
     REFERENCE_POWER_KW,
@@ -36,6 +35,7 @@ from apps.planner.services import (
     reference_plan,
     reference_request,
     summarize_day,
+    tariff_slots,
 )
 from apps.planner.tariff import TariffComparison, simulate_tariff
 from apps.web.analysis import (
@@ -438,15 +438,6 @@ def household_fixed_price(request: HttpRequest) -> Decimal | None:
         .first()
     )
     return price
-
-
-def tariff_slots(start: date, end: date) -> list[PriceSlot]:
-    return [
-        PriceSlot(start_utc=dtime_utc - INTERVAL, price_pln_mwh=price)
-        for dtime_utc, price in PricePoint.objects.filter(business_date__range=(start, end))
-        .order_by("dtime_utc")
-        .values_list("dtime_utc", "price_pln_mwh")
-    ]
 
 
 def tariff_bars(comparison: TariffComparison) -> BarsChart | None:
