@@ -1874,57 +1874,96 @@ fieldset.field legend {
   }
 }
 
-.field textarea {
-  width: 100%;
-  padding: 9px 11px;
+.assistant {
+  max-width: 780px;
+  margin: 0 auto;
+  padding-top: 26px;
+}
+
+.assistant h1 {
+  font-size: 22px;
+}
+
+.assistant-form {
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: var(--surface);
-  color: var(--ink);
-  font: inherit;
-  resize: vertical;
+  padding: 12px 12px 10px;
   transition: border-color var(--t-fast) var(--ease), box-shadow var(--t-fast) var(--ease);
 }
 
-.field textarea:hover {
-  border-color: var(--ink-3);
-}
-
-.field textarea:focus {
-  outline: none;
+.assistant-form:focus-within {
   border-color: var(--focus);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
 }
 
-.examples-title {
-  margin: 22px 0 8px;
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--ink-3);
+.assistant-form textarea {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: var(--ink);
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+}
+
+.assistant-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+  font-size: 13px;
 }
 
 .examples {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 14px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.examples li + li {
-  margin-top: 8px;
+.example {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: border-color var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
 
-.examples .linklike {
-  text-align: left;
-  line-height: 1.45;
-  text-decoration-color: var(--line);
+.example:hover {
+  border-color: var(--ink-3);
+  color: var(--ink);
+}
+
+.assistant-result {
+  position: relative;
+  margin-top: 30px;
+  min-height: 60px;
+}
+
+.assistant-result .panel-progress {
+  top: 0;
+  bottom: auto;
+}
+
+.answer-card {
+  padding-top: 18px;
+  border-top: 1px solid var(--line-2);
 }
 
 .answer {
   font-size: 16px;
   line-height: 1.6;
-  max-width: 70ch;
 }
 
 .answer p + p,
@@ -1937,48 +1976,36 @@ fieldset.field legend {
   padding-left: 20px;
 }
 
-.answer-meta {
+.answer-sources {
   margin-top: 22px;
   padding-top: 14px;
   border-top: 1px solid var(--line-2);
 }
 
-.answer-meta h2 {
+.answer-sources h2 {
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--ink-3);
-  margin-bottom: 8px;
-}
-
-.tool-calls {
-  list-style: none;
-  padding: 0;
-  font-size: 13px;
-}
-
-.tool-calls code {
-  font-size: 12px;
-  overflow-wrap: anywhere;
+  margin-bottom: 6px;
 }
 
 .source summary {
   cursor: pointer;
   font-size: 14px;
-  padding: 4px 0;
+  padding: 5px 0;
 }
 
 .source p {
   font-size: 13px;
   color: var(--ink-2);
-  max-width: 76ch;
-  padding: 4px 0 10px 14px;
+  padding: 2px 0 8px 16px;
 }
 
-.answer-stats {
-  margin-top: 14px;
+.source .source-place {
   font-size: 12px;
+  padding-bottom: 2px;
 }
 
 @media (max-width: 860px) {

@@ -1,9 +1,10 @@
 import time
 from typing import Any
 
+import httpx
 from django.core.management.base import BaseCommand, CommandError, CommandParser
 
-from apps.assistant.law import DEFAULT_ACT, LAW_ACTS, ingest_act
+from apps.assistant.law import DEFAULT_ACT, LAW_ACTS, LawIndexError, ingest_act
 from apps.assistant.llm import LlmClient, LlmError
 
 
@@ -20,6 +21,10 @@ class Command(BaseCommand):
         started = time.monotonic()
         try:
             count = ingest_act(act, client)
+        except httpx.HTTPError as exc:
+            raise CommandError(f"Could not download {act} from the ELI API: {exc}") from exc
+        except LawIndexError as exc:
+            raise CommandError(str(exc)) from exc
         except LlmError as exc:
             raise CommandError(f"Embedding model is not reachable: {exc}") from exc
         elapsed = time.monotonic() - started

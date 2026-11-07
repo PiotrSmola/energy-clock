@@ -274,7 +274,10 @@ def search_energy_law(arguments: dict[str, Any], client: LlmClient) -> ToolOutco
     query = str(arguments.get("query") or "").strip()
     if not query:
         return failure("query must not be empty")
-    results = law.search(query, client)
+    try:
+        results = law.search(query, client)
+    except law.LawIndexError as exc:
+        return failure(str(exc))
     if not results:
         return failure("The law index is empty; run `python manage.py ingest_law`.")
     return ToolOutcome(

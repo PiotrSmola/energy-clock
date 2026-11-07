@@ -49,7 +49,7 @@ class LlmClient:
         if self.reasoning_effort != "omit":
             extra_body["reasoning_effort"] = self.reasoning_effort
         try:
-            return self._client.chat.completions.create(
+            completion = self._client.chat.completions.create(
                 model=self.model,
                 messages=list(messages),
                 tools=list(tools) if tools else omit,
@@ -58,6 +58,9 @@ class LlmClient:
             )
         except OpenAIError as exc:
             raise LlmError(f"{type(exc).__name__}: {exc}") from exc
+        if not completion.choices:
+            raise LlmError("The model returned no choices")
+        return completion
 
     def embed(self, texts: Sequence[str]) -> list[list[float]]:
         vectors: list[list[float]] = []

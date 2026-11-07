@@ -6,8 +6,16 @@ from apps.market.admin import ReadOnlyAdmin
 
 @admin.register(AssistantQuery)
 class AssistantQueryAdmin(ReadOnlyAdmin[AssistantQuery]):
-    list_display = ("created_at", "question", "model", "duration_ms", "completion_tokens", "error")
-    list_filter = ("model",)
+    list_display = (
+        "created_at",
+        "question",
+        "model",
+        "duration_ms",
+        "completion_tokens",
+        "rewritten",
+        "error",
+    )
+    list_filter = ("model", "rewritten")
     search_fields = ("question", "answer")
 
 

@@ -32,6 +32,8 @@ services:
       TZ: Europe/Warsaw
     ports:
       - "127.0.0.1:8000:8000"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - .:/app
     depends_on:
@@ -48,6 +50,8 @@ services:
       DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY}
       REDIS_URL: redis://redis:6379/0
       TZ: Europe/Warsaw
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     volumes:
       - .:/app
     depends_on:

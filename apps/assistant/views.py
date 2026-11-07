@@ -44,6 +44,8 @@ def reply_payload(reply: AssistantReply) -> dict[str, Any]:
         "question": reply.question,
         "answer": reply.answer,
         "error": reply.error,
+        "rejected": reply.rejected,
+        "rewritten": reply.rewritten,
         "tool_calls": [call.as_json() for call in reply.tool_calls],
         "sources": [
             {"act": chunk.act_title, "article": chunk.article, "heading": chunk.heading}
@@ -60,7 +62,8 @@ def api_ask(request: HttpRequest) -> HttpResponse:
     if not question:
         return HttpResponseBadRequest("q must not be empty")
     reply = ask(question)
-    status = 503 if reply.error else 200
+    # 503: the model is not reachable; 502: it answered, but in a script that could not be shown
+    status = 503 if reply.error else 502 if reply.rejected else 200
     return JsonResponse(
         reply_payload(reply), status=status, json_dumps_params={"ensure_ascii": False}
     )

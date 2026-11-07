@@ -31,6 +31,7 @@ class AssistantQuery(models.Model):
     prompt_tokens = models.PositiveIntegerField(null=True, blank=True)
     completion_tokens = models.PositiveIntegerField(null=True, blank=True)
     error = models.TextField(blank=True)
+    rewritten = models.BooleanField(default=False)
 
     class Meta:
         ordering = ("-created_at",)

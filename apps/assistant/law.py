@@ -32,6 +32,10 @@ SPACES = re.compile(r"\s+")
 CHAPTER_NUMBER = re.compile(r"^(Rozdział \S+) ")
 
 
+class LawIndexError(Exception):
+    pass
+
+
 @dataclass
 class Article:
     label: str
@@ -234,6 +238,9 @@ def ingest_act(act: str, client: LlmClient, html: str | None = None) -> int:
         for article in parse_articles(html or fetch_act_html(act))
         for draft in chunk_article(article)
     ]
+    if not drafts:
+        # most likely the ELI markup changed; an empty parse must not wipe a working index
+        raise LawIndexError(f"No articles found in {act}; the existing index was kept")
     vectors = client.embed([embedding_text(act_title, draft) for draft in drafts])
     chunks = [
         LawChunk(
@@ -261,6 +268,10 @@ def search(
     if not stored:
         return []
     query_vector = normalize(client.embed([query])[0])
+    if len(unpack(stored[0][1])) != len(query_vector):
+        raise LawIndexError(
+            "The law index was built with a different embedding model; run ingest_law again"
+        )
     scored = sorted(
         (
             (sum(a * b for a, b in zip(query_vector, unpack(blob), strict=True)), chunk_id)

@@ -2,27 +2,26 @@
 {% load i18n %}
 {% block title %}{% translate "Assistant" %} · Energy Clock{% endblock %}
 {% block content %}
-<div class="planner">
-  <section class="planner-form">
-    <h1>{% translate "Assistant" %}</h1>
-    <p class="lead">{% translate "Ask in your own words. A local language model picks the right calculation or searches the Energy Law; the numbers come from the application, not from the model." %}</p>
-    <form method="get" action="{% url 'assistant:assistant' %}"
-          hx-get="{% url 'assistant:answer' %}" hx-target="#assistant-result" hx-swap="innerHTML transition:true"
-          hx-sync="this:replace" hx-indicator="#assistant-result">
-      <div class="field">
-        <label for="id_q">{% translate "Question" %}</label>
-        <textarea name="q" id="id_q" rows="4" maxlength="{{ max_question_chars }}" required>{{ question }}</textarea>
-      </div>
+<div class="assistant">
+  <h1>{% translate "Assistant" %}</h1>
+  <p class="lead">{% translate "Ask in your own words. A local language model picks the right calculation or searches the Energy Law; the numbers come from the application, not from the model." %}</p>
+  <form class="assistant-form" method="get" action="{% url 'assistant:assistant' %}"
+        hx-get="{% url 'assistant:answer' %}" hx-target="#assistant-result" hx-swap="innerHTML transition:true"
+        hx-sync="this:replace" hx-indicator="#assistant-result">
+    <label class="sr-only" for="id_q">{% translate "Question" %}</label>
+    <textarea name="q" id="id_q" rows="3" maxlength="{{ max_question_chars }}" required
+              placeholder="{% translate 'For example: when should I run the dishwasher tonight?' %}">{{ question }}</textarea>
+    <div class="assistant-actions">
+      <span class="muted">{% translate "Answers take a few seconds." %}</span>
       <button type="submit" class="btn btn--primary">{% translate "Ask" %}</button>
-    </form>
-    <p class="examples-title">{% translate "Examples" %}</p>
-    <ul class="examples">
-      {% for example in examples %}
-      <li><a class="linklike" href="{% url 'assistant:assistant' %}?q={{ example|urlencode }}">{{ example }}</a></li>
-      {% endfor %}
-    </ul>
-  </section>
-  <section id="assistant-result" class="planner-result" aria-live="polite">
+    </div>
+  </form>
+  <ul class="examples" aria-label="{% translate 'Examples' %}">
+    {% for example in examples %}
+    <li><a class="example" href="{% url 'assistant:assistant' %}?q={{ example|urlencode }}">{{ example }}</a></li>
+    {% endfor %}
+  </ul>
+  <section id="assistant-result" class="assistant-result" aria-live="polite">
     {% include "assistant/partials/answer.html" %}
   </section>
 </div>
