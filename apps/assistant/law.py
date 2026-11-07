@@ -1,6 +1,7 @@
 import math
 import re
 from array import array
+from collections import Counter, defaultdict
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from html.parser import HTMLParser
@@ -17,6 +18,13 @@ FETCH_TIMEOUT_SECONDS = 60.0
 MAX_CHUNK_CHARS = 2400
 SEARCH_RESULTS = 4
 HEADING_SEPARATOR = " > "
+
+# hybrid search, tuned with `manage.py eval_law_search`
+RRF_K = 10
+KEYWORD_WEIGHT = 0.5
+STEM_CHARS = 6
+MIN_WORD_CHARS = 4
+WORD = re.compile(r"\w+")
 
 # acts the assistant can search; texts are downloaded from the Sejm ELI API, never committed
 LAW_ACTS = {
@@ -260,11 +268,25 @@ def ingest_act(act: str, client: LlmClient, html: str | None = None) -> int:
     return len(chunks)
 
 
+def stems(text: str) -> set[str]:
+    # crude stemming for Polish inflection: "dynamicznej" and "dynamiczną" share "dynami"
+    return {
+        word[:STEM_CHARS]
+        for word in WORD.findall(text.lower())
+        if len(word) >= MIN_WORD_CHARS or word.isdigit()
+    }
+
+
 def search(
     query: str, client: LlmClient, limit: int = SEARCH_RESULTS
 ) -> list[tuple[LawChunk, float]]:
-    """Brute-force cosine similarity: a few hundred chunks do not need a vector database."""
-    stored = list(LawChunk.objects.values_list("id", "embedding"))
+    """Hybrid search: cosine similarity and keyword overlap, merged by reciprocal rank fusion.
+
+    Embeddings alone miss questions asked in everyday words ("taryfa dynamiczna", "dostawca")
+    when the act says "umowa z ceną dynamiczną" and "sprzedawca"; keywords alone miss
+    paraphrases. Brute force is enough: a few hundred chunks do not need a vector database.
+    """
+    stored = list(LawChunk.objects.values_list("id", "embedding", "heading", "text"))
     if not stored:
         return []
     query_vector = normalize(client.embed([query])[0])
@@ -272,12 +294,26 @@ def search(
         raise LawIndexError(
             "The law index was built with a different embedding model; run ingest_law again"
         )
-    scored = sorted(
-        (
-            (sum(a * b for a, b in zip(query_vector, unpack(blob), strict=True)), chunk_id)
-            for chunk_id, blob in stored
-        ),
-        reverse=True,
-    )[:limit]
-    chunks = LawChunk.objects.in_bulk([chunk_id for _score, chunk_id in scored])
-    return [(chunks[chunk_id], score) for score, chunk_id in scored]
+    similarity = {
+        chunk_id: sum(a * b for a, b in zip(query_vector, unpack(blob), strict=True))
+        for chunk_id, blob, _heading, _text in stored
+    }
+    query_stems = stems(query)
+    chunk_stems = {
+        chunk_id: stems(f"{heading} {text}") & query_stems
+        for chunk_id, _blob, heading, text in stored
+    }
+    frequency = Counter(stem for matched in chunk_stems.values() for stem in matched)
+    rarity = {stem: math.log((len(stored) + 1) / (frequency[stem] + 1)) for stem in query_stems}
+    keywords = {
+        chunk_id: sum(rarity[stem] for stem in matched) for chunk_id, matched in chunk_stems.items()
+    }
+    fused: defaultdict[int, float] = defaultdict(float)
+    for rank, chunk_id in enumerate(sorted(similarity, key=similarity.__getitem__, reverse=True)):
+        fused[chunk_id] += 1 / (RRF_K + rank + 1)
+    for rank, chunk_id in enumerate(sorted(keywords, key=keywords.__getitem__, reverse=True)):
+        if keywords[chunk_id] > 0:
+            fused[chunk_id] += KEYWORD_WEIGHT / (RRF_K + rank + 1)
+    best = sorted(fused, key=fused.__getitem__, reverse=True)[:limit]
+    chunks = LawChunk.objects.in_bulk(best)
+    return [(chunks[chunk_id], similarity[chunk_id]) for chunk_id in best]

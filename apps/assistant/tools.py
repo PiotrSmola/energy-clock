@@ -17,8 +17,6 @@ from apps.planner.optimizer import Window
 from apps.planner.services import build_plan, summarize_day, tariff_slots
 from apps.planner.tariff import simulate_tariff
 
-MAX_LAW_TEXT_CHARS = 1800
-
 TOOLS: list[ChatCompletionToolParam] = [
     {
         "type": "function",
@@ -115,7 +113,11 @@ TOOLS: list[ChatCompletionToolParam] = [
                 "properties": {
                     "query": {
                         "type": "string",
-                        "description": "What to look for, in Polish",
+                        "description": (
+                            "What to look for, in Polish and in the words of the act where "
+                            "possible: 'umowa z ceną dynamiczną', 'sprzedawca', 'odbiorca "
+                            "końcowy' rather than 'taryfa dynamiczna' or 'dostawca'"
+                        ),
                     },
                 },
                 "required": ["query"],
@@ -287,7 +289,7 @@ def search_energy_law(arguments: dict[str, Any], client: LlmClient) -> ToolOutco
                 {
                     "article": f"art. {chunk.article}",
                     "location": chunk.heading,
-                    "text": chunk.text[:MAX_LAW_TEXT_CHARS],
+                    "text": chunk.text,
                     "similarity": round(score, 3),
                 }
                 for chunk, score in results
