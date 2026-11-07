@@ -7,6 +7,7 @@ from apps.assistant import law
 from apps.assistant.law import (
     MAX_CHUNK_CHARS,
     Article,
+    LawIndexError,
     article_label,
     chunk_article,
     ingest_act,
@@ -308,3 +309,22 @@ def test_fetch_act_html_raises_on_http_errors() -> None:
 
     with override_settings(ELI_API_BASE="https://eli.test"), pytest.raises(httpx.HTTPStatusError):
         law.fetch_act_html(ACT)
+
+
+def test_ingest_act_without_any_article_keeps_the_existing_index() -> None:
+    ingest_act(ACT, FakeLlm(), html=ACT_HTML)
+    client = FakeLlm()
+
+    with pytest.raises(LawIndexError, match="existing index was kept"):
+        ingest_act(ACT, client, html="<html><body>nothing here</body></html>")
+
+    assert LawChunk.objects.filter(act=ACT).count() == 3
+    assert client.embedded == []
+
+
+def test_search_with_a_different_embedding_dimension_raises_law_index_error() -> None:
+    add_chunk(0, "1", [1.0, 0.0, 0.0])
+    client = FakeLlm(vectorize=lambda _text: [1.0, 0.0])
+
+    with pytest.raises(LawIndexError, match="different embedding model"):
+        search("taryfa", client)

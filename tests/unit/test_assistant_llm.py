@@ -201,3 +201,10 @@ def test_client_defaults_come_from_settings() -> None:
     assert client.model == "configured-model"
     assert client.embedding_model == "configured-embedding"
     assert client.reasoning_effort == "high"
+
+
+def test_chat_without_choices_is_an_llm_error(server: FakeServer) -> None:
+    server.reply(CHAT_URL, 200, {**CHAT_RESPONSE, "choices": []})
+
+    with pytest.raises(LlmError, match="no choices"):
+        make_client().chat([{"role": "user", "content": "Hej"}])

@@ -392,3 +392,14 @@ def test_local_label_names_today_tomorrow_yesterday_and_dates() -> None:
     # the label uses Warsaw time, not UTC: 22:30 UTC on Sept 4 is already Sept 5 in Poland
     utc_moment = datetime(2026, 9, 4, 22, 30, tzinfo=UTC)
     assert local_label(utc_moment, now) == "2026-09-05 00:30 (tomorrow)"
+
+
+def test_search_energy_law_turns_an_index_mismatch_into_an_error_result() -> None:
+    add_chunk(0, "45", [1.0, 0.0, 0.0])
+    client = FakeLlm(vectorize=lambda _text: [1.0, 0.0])
+
+    outcome = call("search_energy_law", {"query": "taryfa"}, client)
+
+    assert outcome.error is not None
+    assert "different embedding model" in outcome.error
+    assert outcome.sources == []

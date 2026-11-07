@@ -5,7 +5,13 @@ import pytest
 import time_machine
 
 from apps.assistant import agent
-from apps.assistant.agent import MAX_QUESTION_CHARS, MAX_TOOL_ROUNDS, ask
+from apps.assistant.agent import (
+    MAX_QUESTION_CHARS,
+    MAX_TOOL_ROUNDS,
+    REWRITE_PROMPT,
+    ask,
+    foreign_letters,
+)
 from apps.assistant.law import pack
 from apps.assistant.llm import LlmError
 from apps.assistant.models import AssistantQuery, LawChunk
@@ -224,3 +230,140 @@ def test_ask_builds_a_default_client_and_clock(monkeypatch: pytest.MonkeyPatch) 
 
     assert reply.answer == "ok"
     assert reply.duration_ms >= 0
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "",
+        "Zażółć gęślą jaźń, ŁÓDŹ ćńśż",
+        "Café naïve über straße",
+        "Koszt 12,50 zł, 2 kWh, 100%",
+        "CO₂ m² m¹ ≈ 0,5 \u2013 1 € 20 °C",
+        "1ª 2º",
+        '- lista:\n1. punkt; (nawias) "cytat" ... —',
+    ],
+)
+def test_foreign_letters_allows_latin_text_digits_and_symbols(text: str) -> None:
+    assert foreign_letters(text) == ""
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        (
+            "Cześć \u043f\u0440\u0438\u0432\u0435\u0442",
+            "".join(sorted(set("\u043f\u0440\u0438\u0432\u0435\u0442"))),
+        ),
+        (
+            "\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac",
+            "".join(sorted(set("\u0395\u03bb\u03bb\u03b7\u03bd\u03b9\u03ba\u03ac"))),
+        ),
+        ("\u96fb\u6c17\u6599\u91d1", "".join(sorted(set("\u96fb\u6c17\u6599\u91d1")))),
+        (
+            "\u043f\u0440\u043e\u0446\u0435\u0434\u0443rę",
+            "".join(sorted(set("\u043f\u0440\u043e\u0446\u0435\u0434\u0443"))),
+        ),
+        ("Włącz \u043e 02:00", "\u043e"),
+    ],
+)
+def test_foreign_letters_detects_other_scripts_sorted_and_deduplicated(
+    text: str, expected: str
+) -> None:
+    result = foreign_letters(text)
+
+    assert result == expected
+    assert result == "".join(sorted(set(result)))
+    assert result != ""
+
+
+def test_clean_answer_needs_no_extra_call() -> None:
+    client = FakeLlm(completion("Włącz pralkę o 02:00."))
+
+    reply = ask("Pralka?", client=client, now=NOON_SEPT_4)
+
+    assert len(client.chat_calls) == 1
+    assert (reply.rewritten, reply.rejected) == (False, False)
+    assert AssistantQuery.objects.get().rewritten is False
+
+
+def test_contaminated_answer_is_rewritten_with_exactly_one_extra_call() -> None:
+    client = FakeLlm(
+        completion(
+            "Włącz pralkę o \u043f\u0440\u043e\u0446\u0435\u0434\u0443rę 02:00.", usage=(10, 5)
+        ),
+        completion("Włącz pralkę o 02:00.", usage=(20, 6)),
+    )
+
+    reply = ask("Kiedy włączyć pralkę?", client=client, now=NOON_SEPT_4)
+
+    assert reply.answer == "Włącz pralkę o 02:00."
+    assert (reply.rewritten, reply.rejected, reply.error) == (True, False, None)
+    assert len(client.chat_calls) == 2
+    rewrite_call = client.chat_calls[1]
+    assert rewrite_call.tools is None
+    assert rewrite_call.messages[-2] == {
+        "role": "assistant",
+        "content": "Włącz pralkę o \u043f\u0440\u043e\u0446\u0435\u0434\u0443rę 02:00.",
+    }
+    assert rewrite_call.messages[-1] == {
+        "role": "user",
+        "content": REWRITE_PROMPT.format(
+            letters=foreign_letters("\u043f\u0440\u043e\u0446\u0435\u0434\u0443rę")
+        ),
+    }
+    assert rewrite_call.messages[:2] == client.chat_calls[0].messages[:2]
+    assert (reply.prompt_tokens, reply.completion_tokens) == (30, 11)
+    row = AssistantQuery.objects.get()
+    assert (row.answer, row.rewritten, row.error) == ("Włącz pralkę o 02:00.", True, "")
+
+
+@time_machine.travel(NOON_SEPT_4, tick=False)
+def test_rewrite_after_a_tool_round_keeps_the_tool_messages() -> None:
+    client = FakeLlm(
+        completion(tool_calls=[("a", "get_day_prices", '{"date": "2020-01-01"}')]),
+        completion("Brak danych, \u0441\u043f\u0430\u0441\u0438\u0431\u043e."),
+        completion("Brak danych."),
+    )
+
+    reply = ask("Ceny?", client=client)
+
+    assert reply.answer == "Brak danych."
+    roles = [message["role"] for message in client.chat_calls[2].messages]
+    assert roles == ["system", "user", "assistant", "tool", "assistant", "user"]
+    assert client.chat_calls[2].tools is None
+
+
+@pytest.mark.parametrize(
+    "second", ["Nadal \u043f\u043e-\u0440\u0443\u0441\u0441\u043a\u0438", "", "   "]
+)
+def test_bad_rewrite_rejects_the_answer(second: str) -> None:
+    client = FakeLlm(completion("Włącz \u043e 02:00."), completion(second))
+
+    reply = ask("Pralka?", client=client, now=NOON_SEPT_4)
+
+    assert len(client.chat_calls) == 2
+    assert reply.answer == ""
+    assert (reply.rejected, reply.rewritten, reply.error) == (True, True, None)
+    row = AssistantQuery.objects.get()
+    assert row.answer == ""
+    assert row.rewritten is True
+    assert row.error == "Rejected: non-Latin letters after a rewrite"
+
+
+def test_missing_rewrite_content_is_rejected() -> None:
+    client = FakeLlm(completion("Włącz \u043e 02:00."), completion(None))
+
+    reply = ask("Pralka?", client=client, now=NOON_SEPT_4)
+
+    assert reply.rejected is True
+    assert reply.answer == ""
+
+
+def test_llm_error_during_the_rewrite_is_an_error_not_a_rejection() -> None:
+    client = FakeLlm(completion("Włącz \u043e 02:00."), LlmError("timeout"))
+
+    reply = ask("Pralka?", client=client, now=NOON_SEPT_4)
+
+    assert (reply.error, reply.rejected, reply.answer) == ("timeout", False, "")
+    assert AssistantQuery.objects.get().error == "timeout"

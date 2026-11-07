@@ -2,6 +2,7 @@ import json
 from io import StringIO
 from typing import Any
 
+import httpx
 import pytest
 from django.core.management import call_command
 from django.core.management.base import CommandError
@@ -42,6 +43,15 @@ def source_chunk() -> LawChunk:
         text="Sprzedawca <b>oferuje</b> umowę.",
         embedding=pack([1.0, 0.0]),
     )
+
+
+def result_area(html: str) -> str:
+    """Text content of the result section, without the progress bar."""
+    inner = html.split('id="assistant-result"', 1)[1].split("</section>", 1)[0]
+    inner = inner.split(">", 1)[1].replace(
+        '<div class="panel-progress" aria-hidden="true"></div>', ""
+    )
+    return inner.strip()
 
 
 def make_reply(**overrides: Any) -> AssistantReply:
@@ -87,11 +97,12 @@ def test_page_without_a_question_does_not_call_the_model(
     assert response.status_code == 200
     assert spy.questions == []
     html = response.content.decode()
-    assert "The answer appears here" in html
     assert "<html" in html
     assert 'name="q"' in html
     assert f'maxlength="{MAX_QUESTION_CHARS}"' in html
+    assert '<a class="example" href="/assistant?q=' in html
     assert "washing machine" in html
+    assert result_area(html) == ""
 
 
 def test_blank_question_does_not_call_the_model(
@@ -104,7 +115,7 @@ def test_blank_question_does_not_call_the_model(
     assert spy.questions == []
 
 
-def test_page_with_a_question_renders_answer_tool_calls_and_sources(
+def test_page_with_a_question_renders_answer_and_sources_but_no_internals(
     client: Client, monkeypatch: pytest.MonkeyPatch, source_chunk: LawChunk
 ) -> None:
     spy = patch_ask(monkeypatch, make_reply(sources=[source_chunk]))
@@ -114,14 +125,16 @@ def test_page_with_a_question_renders_answer_tool_calls_and_sources(
     assert spy.questions == ["Kiedy włączyć pralkę?"]
     html = response.content.decode()
     assert "<strong>02:00</strong>" in html
-    assert "Calculations used" in html
-    assert "find_cheapest_window" in html
-    assert "date must be YYYY-MM-DD" in html
+    assert "Calculations used" not in html
+    assert "find_cheapest_window" not in html
+    assert "date must be YYYY-MM-DD" not in html
+    assert "234 ms" not in html
+    assert "tokens" not in html
     assert "Articles found" in html
+    assert html.count('<details class="source">') == 1
+    assert "<summary><strong>art. 5a</strong>" in html
     assert "Rozdział 1 &gt; Art. 5a" in html
     assert "Sprzedawca &lt;b&gt;oferuje&lt;/b&gt; umowę." in html
-    assert "234 ms" in html
-    assert "42 tokens" in html
     assert "not legal advice" in html
 
 
@@ -170,7 +183,7 @@ def test_answer_partial_has_no_page_chrome(client: Client, monkeypatch: pytest.M
     assert "<strong>02:00</strong>" in html
 
 
-def test_answer_partial_without_a_question_shows_the_placeholder(
+def test_answer_partial_without_a_question_is_empty(
     client: Client, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     spy = patch_ask(monkeypatch)
@@ -178,7 +191,9 @@ def test_answer_partial_without_a_question_shows_the_placeholder(
     html = client.get(reverse("assistant:answer")).content.decode()
 
     assert spy.questions == []
-    assert "The answer appears here" in html
+    assert "<article" not in html
+    assert "could not be shown" not in html
+    assert html.replace('<div class="panel-progress" aria-hidden="true"></div>', "").strip() == ""
 
 
 def test_api_requires_a_question(client: Client, monkeypatch: pytest.MonkeyPatch) -> None:
@@ -203,6 +218,8 @@ def test_api_returns_the_reply_as_json(
         "question": "Kiedy włączyć pralkę?",
         "answer": "Włącz o **02:00**.",
         "error": None,
+        "rejected": False,
+        "rewritten": False,
         "tool_calls": [
             {
                 "name": "find_cheapest_window",
@@ -370,3 +387,117 @@ def test_ingest_law_command_rejects_unknown_acts() -> None:
 
 def test_json_dump_of_payload_is_serialisable() -> None:
     assert json.dumps(views.reply_payload(make_reply()), ensure_ascii=False)
+
+
+def test_rejected_answer_is_not_shown_on_the_page(
+    client: Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    patch_ask(monkeypatch, make_reply(answer="", rejected=True, rewritten=True))
+
+    html = client.get(reverse("assistant:assistant"), {"q": "Hej"}).content.decode()
+
+    assert "The answer could not be shown." in html
+    assert "<article" not in html
+    assert "The model returned an empty answer." not in html
+
+
+def test_rejected_answer_is_not_shown_in_the_partial(
+    client: Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    patch_ask(monkeypatch, make_reply(answer="", rejected=True))
+
+    html = client.get(reverse("assistant:answer"), {"q": "Hej"}).content.decode()
+
+    assert "The answer could not be shown." in html
+    assert "<html" not in html
+
+
+def test_api_answers_502_with_rejected_when_the_answer_is_unusable(
+    client: Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    patch_ask(monkeypatch, make_reply(answer="", rejected=True, rewritten=True))
+
+    response = client.get(reverse("assistant:api_ask"), {"q": "Hej"})
+
+    assert response.status_code == 502
+    body = response.json()
+    assert (body["rejected"], body["rewritten"], body["error"], body["answer"]) == (
+        True,
+        True,
+        None,
+        "",
+    )
+
+
+CYRILLIC_ANSWER = "Włącz pralkę o \u043f\u0440\u043e\u0446\u0435\u0434\u0443rę 02:00."
+
+
+def contaminated_twice_client() -> FakeLlm:
+    return FakeLlm(completion(CYRILLIC_ANSWER), completion(CYRILLIC_ANSWER))
+
+
+def test_page_end_to_end_shows_the_rewrite_when_the_first_answer_has_foreign_letters(
+    client: Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = FakeLlm(completion(CYRILLIC_ANSWER), completion("Włącz pralkę o 02:00."))
+    monkeypatch.setattr(agent, "LlmClient", lambda: fake)
+
+    html = client.get(reverse("assistant:assistant"), {"q": "Hej"}).content.decode()
+
+    assert "Włącz pralkę o 02:00." in html
+    assert "\u043f\u0440\u043e\u0446\u0435\u0434\u0443rę" not in html
+    assert AssistantQuery.objects.get().rewritten is True
+
+
+def test_page_end_to_end_hides_an_answer_that_is_still_foreign_after_the_rewrite(
+    client: Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = contaminated_twice_client()
+    monkeypatch.setattr(agent, "LlmClient", lambda: fake)
+
+    html = client.get(reverse("assistant:assistant"), {"q": "Hej"}).content.decode()
+
+    assert "The answer could not be shown." in html
+    assert "\u043f\u0440\u043e\u0446\u0435\u0434\u0443rę" not in html
+
+
+def test_api_end_to_end_answers_502_after_a_failed_rewrite(
+    client: Client, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    fake = contaminated_twice_client()
+    monkeypatch.setattr(agent, "LlmClient", lambda: fake)
+
+    response = client.get(reverse("assistant:api_ask"), {"q": "Hej"})
+
+    assert response.status_code == 502
+    body = response.json()
+    assert body["rejected"] is True
+    assert body["rewritten"] is True
+    assert body["answer"] == ""
+    assert "\u043f\u0440\u043e\u0446\u0435\u0434\u0443rę" not in response.content.decode()
+    assert len(fake.chat_calls) == 2
+
+
+def test_ingest_law_command_turns_download_errors_into_command_errors(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    def failing_download(act: str) -> str:
+        raise httpx.ConnectError("no route")
+
+    monkeypatch.setattr(ingest_law, "LlmClient", lambda: FakeLlm())
+    monkeypatch.setattr("apps.assistant.law.fetch_act_html", failing_download)
+
+    with pytest.raises(CommandError, match="Could not download DU/2024/266 from the ELI API"):
+        call_command("ingest_law")
+
+
+def test_ingest_law_command_turns_an_empty_parse_into_a_command_error_and_keeps_the_index(
+    monkeypatch: pytest.MonkeyPatch, source_chunk: LawChunk
+) -> None:
+    monkeypatch.setattr(ingest_law, "LlmClient", lambda: FakeLlm())
+    monkeypatch.setattr("apps.assistant.law.fetch_act_html", lambda act: "<html>changed</html>")
+
+    with pytest.raises(CommandError, match="No articles found"):
+        call_command("ingest_law")
+
+    assert LawChunk.objects.filter(pk=source_chunk.pk).exists()
